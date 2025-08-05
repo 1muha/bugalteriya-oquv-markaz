@@ -9,10 +9,10 @@ import { Label } from "@/components/ui/label"
 import { Download, Search, Plus, Edit, Trash2 } from "lucide-react"
 import { useAccounting } from "@/contexts/accounting-context"
 
-const formatNumber = (value: string | number) => {
-  const num = typeof value === "string" ? Number.parseFloat(value.replace(/,/g, "")) : value
-  return isNaN(num) ? "" : num.toLocaleString()
-}
+// ...existing code...
+const formatNumber = (value: string | number) => value ?? ""
+// ...existing code...
+
 
 const parseNumber = (value: string) => {
   return Number.parseFloat(value.replace(/,/g, "")) || 0
