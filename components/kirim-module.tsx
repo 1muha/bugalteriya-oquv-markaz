@@ -9,6 +9,20 @@ import { Label } from "@/components/ui/label"
 import { Download, Search, Plus, Edit, Trash2 } from "lucide-react"
 import { useAccounting } from "@/contexts/accounting-context"
 
+
+// ...existing code...
+const formatNumber = (
+  value: string | number,
+  separator: string = ","
+) => {
+  if (value === null || value === undefined || value === "") return "";
+  // Remove any existing separators and non-digit characters
+  const digits = String(value).replace(/\D/g, "");
+  // Insert separator every 3 digits from the right
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+}
+// ...existing code...
+
 interface KirimData {
   id: number
   korxonaNomi: string
@@ -53,9 +67,6 @@ export default function KirimModule() {
     tolandi: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 },
   })
 
-// ...existing code...
-const formatNumber = (value: string | number) => value ?? ""
-// ...existing code...
 
   const parseNumber = (value: string) => {
     return Number.parseFloat(value.replace(/,/g, "")) || 0
