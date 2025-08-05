@@ -53,10 +53,9 @@ export default function KirimModule() {
     tolandi: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 },
   })
 
-  const formatNumber = (value: string | number) => {
-    const num = typeof value === "string" ? Number.parseFloat(value.replace(/,/g, "")) : value
-    return isNaN(num) ? "" : num.toLocaleString()
-  }
+// ...existing code...
+const formatNumber = (value: string | number) => value ?? ""
+// ...existing code...
 
   const parseNumber = (value: string) => {
     return Number.parseFloat(value.replace(/,/g, "")) || 0
