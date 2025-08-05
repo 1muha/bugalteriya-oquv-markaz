@@ -10,7 +10,12 @@ import { Download, Search, Plus, Edit, Trash2 } from "lucide-react"
 import { useAccounting } from "@/contexts/accounting-context"
 
 // ...existing code...
-const formatNumber = (value: string | number) => value ?? ""
+const formatNumber = (value: string | number) => {
+  if (value === null || value === undefined || value === "") return "";
+  const num = typeof value === "string" ? Number(value.replace(/\s/g, "")) : value;
+  if (isNaN(num)) return value;
+  return num.toLocaleString("en-US").replace(/,/g, " ");
+}
 // ...existing code...
 
 
