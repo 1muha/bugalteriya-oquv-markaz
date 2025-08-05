@@ -5,6 +5,30 @@ import { ChevronDownIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
+// function NavigationMenu({
+//   className,
+//   children,
+//   viewport = true,
+//   ...props
+// }: React.ComponentProps<typeof NavigationMenuPrimitive.Root> & {
+//   viewport?: boolean
+// }) {
+//   return (
+//     <NavigationMenuPrimitive.Root
+//       data-slot="navigation-menu"
+//       data-viewport={viewport}
+//       className={cn(
+//         "group/navigation-menu relative flex max-w-max flex-1 items-center justify-center",
+//         className
+//       )}
+//       {...props}
+//     >
+//       {children}
+//       {viewport && <NavigationMenuViewport />}
+//     </NavigationMenuPrimitive.Root>
+//   )
+// }
+
 function NavigationMenu({
   className,
   children,
@@ -18,7 +42,7 @@ function NavigationMenu({
       data-slot="navigation-menu"
       data-viewport={viewport}
       className={cn(
-        "group/navigation-menu relative flex max-w-max flex-1 items-center justify-center",
+        "group/navigation-menu sticky top-0 z-50 bg-background flex max-w-max flex-1 items-center justify-center",
         className
       )}
       {...props}
@@ -28,6 +52,7 @@ function NavigationMenu({
     </NavigationMenuPrimitive.Root>
   )
 }
+
 
 function NavigationMenuList({
   className,
