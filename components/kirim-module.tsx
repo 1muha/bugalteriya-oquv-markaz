@@ -33,7 +33,7 @@ interface KirimData {
   lastUpdated: string
 }
 
-const filialOptions = ["Toshkent filiali", "Samarqand filiali", "Buxoro filiali", "Andijon filiali", "Namangan filiali"]
+const filialOptions = ["Zarkent Filiali", "Nabrejniy Filiali"]
 
 export default function KirimModule() {
   const { kirimData, loading, addKirim, updateKirim, deleteKirim } = useAccounting()
