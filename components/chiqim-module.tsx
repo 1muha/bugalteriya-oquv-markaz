@@ -32,7 +32,7 @@ interface ChiqimData {
   qoldiqAvans: number
 }
 
-const filialOptions = ["Toshkent filiali", "Samarqand filiali", "Buxoro filiali", "Andijon filiali", "Namangan filiali"]
+const filialOptions = ["Zarkent Filiali", "Nabrejniy Filiali"]
 
 function ChiqimModule() {
   const { chiqimData, loading, addChiqim, updateChiqim, deleteChiqim } = useAccounting()
