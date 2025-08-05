@@ -10,11 +10,15 @@ import { Download, Search, Plus, Edit, Trash2 } from "lucide-react"
 import { useAccounting } from "@/contexts/accounting-context"
 
 // ...existing code...
-const formatNumber = (value: string | number) => {
+const formatNumber = (
+  value: string | number,
+  separator: string = ","
+) => {
   if (value === null || value === undefined || value === "") return "";
-  const num = typeof value === "string" ? Number(value.replace(/\s/g, "")) : value;
-  if (isNaN(num)) return value;
-  return num.toLocaleString("en-US").replace(/,/g, " ");
+  // Remove any existing separators and non-digit characters
+  const digits = String(value).replace(/\D/g, "");
+  // Insert separator every 3 digits from the right
+  return digits.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 }
 // ...existing code...
 
@@ -501,20 +505,24 @@ function ChiqimModule() {
                 <td className="px-4 py-3 text-sm" colSpan={5}>
                   Jami ko'rsatkichlar:
                 </td>
-                <td className="px-4 py-3 text-sm text-right text-gray-700">
-                  {totals.avvalgiOylardan.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-sm text-right text-gray-700">
-                  {totals.birOylikHisoblangan.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-sm text-right text-green-600">
-                  {totals.jamiHisoblangan.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-sm text-right text-gray-700">{totals.tolangan.toLocaleString()}</td>
-                <td className="px-4 py-3 text-sm text-right text-red-600">
-                  {totals.qoldiqQarzDorlik.toLocaleString()}
-                </td>
-                <td className="px-4 py-3 text-sm text-right text-blue-600">{totals.qoldiqAvans.toLocaleString()}</td>
+<td className="px-4 py-3 text-sm text-right text-gray-700">
+  {formatNumber(totals.avvalgiOylardan)}
+</td>
+<td className="px-4 py-3 text-sm text-right text-gray-700">
+  {formatNumber(totals.birOylikHisoblangan)}
+</td>
+<td className="px-4 py-3 text-sm text-right text-green-600">
+  {formatNumber(totals.jamiHisoblangan)}
+</td>
+<td className="px-4 py-3 text-sm text-right text-gray-700">
+  {formatNumber(totals.tolangan)}
+</td>
+<td className="px-4 py-3 text-sm text-right text-red-600">
+  {formatNumber(totals.qoldiqQarzDorlik)}
+</td>
+<td className="px-4 py-3 text-sm text-right text-blue-600">
+  {formatNumber(totals.qoldiqAvans)}
+</td>
                 <td className="px-4 py-3"></td>
               </tr>
             </thead>
@@ -526,16 +534,24 @@ function ChiqimModule() {
                   <td className="px-4 py-3 text-sm text-gray-900 font-medium">{row.nomi}</td>
                   <td className="px-4 py-3 text-sm text-gray-700">{row.filialNomi}</td>
                   <td className="px-4 py-3 text-sm text-gray-700">{row.chiqimNomi}</td>
-                  <td className="px-4 py-3 text-sm text-right text-gray-700">{row.avvalgiOylardan.toLocaleString()}</td>
                   <td className="px-4 py-3 text-sm text-right text-gray-700">
-                    {row.birOylikHisoblangan.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-right text-green-600">
-                    {row.jamiHisoblangan.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-sm text-right text-gray-700">{row.tolangan.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-sm text-right text-red-600">{row.qoldiqQarzDorlik.toLocaleString()}</td>
-                  <td className="px-4 py-3 text-sm text-right text-blue-600">{row.qoldiqAvans.toLocaleString()}</td>
+  {formatNumber(row.avvalgiOylardan)}
+</td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-700">
+  {formatNumber(row.birOylikHisoblangan)}
+</td>
+                <td className="px-4 py-3 text-sm text-right text-green-600">
+  {formatNumber(row.jamiHisoblangan)}
+</td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-700">
+  {formatNumber(row.tolangan)}
+</td>
+      <td className="px-4 py-3 text-sm text-right text-red-600">
+  {formatNumber(row.qoldiqQarzDorlik)}
+</td>
+           <td className="px-4 py-3 text-sm text-right text-blue-600">
+  {formatNumber(row.qoldiqAvans)}
+</td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex items-center justify-center gap-1">
                       <Button
