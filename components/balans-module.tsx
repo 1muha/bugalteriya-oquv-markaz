@@ -123,17 +123,17 @@ export default function BalansModule() {
     })
 
     // Create Balans data
-    const balansData: BalansData[] = Object.entries(filialGroups).map(([filialNomi, data], index) => ({
-      id: index + 1,
-      filialNomi,
-      oldingiOylardan: data.kirim.oldingiOylardan,
-      birOylikHisoblangan: data.kirim.birOylikHisoblangan,
-      jamiHisoblangan: data.kirim.jamiHisoblangan,
-      tolandi: data.kirim.tolandi,
-      qoldiq: data.kirim.qoldiq,
-      jamiOylikXarajat: data.chiqim.tolangan,
-      jamiYigirmaAyirmasi: data.kirim.tolandi.jami - data.chiqim.tolangan,
-    }))
+ const balansData: BalansData[] = Object.entries(filialGroups).map(([filialNomi, data], index) => ({
+  id: index + 1,
+  filialNomi,
+  oldingiOylardan: data.kirim.oldingiOylardan,
+  birOylikHisoblangan: data.kirim.birOylikHisoblangan,
+  jamiHisoblangan: data.kirim.jamiHisoblangan,
+  tolandi: data.kirim.tolandi,
+  qoldiq: data.kirim.qoldiq,
+  jamiOylikXarajat: data.chiqim.tolangan, // <-- UPDATED
+  jamiYigirmaAyirmasi: data.kirim.tolandi.jami - data.chiqim.tolangan, // <-- UPDATED
+}))
 
     // Only show filials with data
     setData(
