@@ -301,7 +301,7 @@ function ChiqimModule() {
                 <div>
                   <Label htmlFor="filialNomi">Filial nomi</Label>
                   <Select
-                    value={newEntry.filialNomi || "Toshkent filiali"}
+                    value={newEntry.filialNomi || "Zarkent filiali"}
                     onValueChange={(value) => setNewEntry({ ...newEntry, filialNomi: value })}
                   >
                     <SelectTrigger>
