@@ -23,6 +23,10 @@ const formatNumber = (
 // ...existing code...
 
 
+const calculateTolanganJami = (naqd: number, prechisleniya: number, karta: number) => {
+  return (naqd || 0) + (prechisleniya || 0) + (karta || 0);
+};
+
 const parseNumber = (value: string) => {
   return Number.parseFloat(value.replace(/,/g, "")) || 0
 }
@@ -36,10 +40,22 @@ interface ChiqimData {
   avvalgiOylardan: number
   birOylikHisoblangan: number
   jamiHisoblangan: number
-  tolangan: number
+  tolangan: {
+    jami: number
+    naqd: number
+    prechisleniya: number
+    karta: number
+  }
   qoldiqQarzDorlik: number
   qoldiqAvans: number
 }
+
+const tolanganJami = calculateTolanganJami(
+  newEntry.tolangan?.naqd || 0,
+  newEntry.tolangan?.prechisleniya || 0,
+  newEntry.tolangan?.karta || 0
+);
+
 
 const filialOptions = ["Zarkent Filiali", "Nabrejniy Filiali"]
 
@@ -56,16 +72,24 @@ function ChiqimModule() {
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [editingItem, setEditingItem] = useState<ChiqimData | null>(null)
-  const [newEntry, setNewEntry] = useState<Partial<ChiqimData>>({})
+  const [newEntry, setNewEntry] = useState<Partial<ChiqimData>>({
+  tolangan: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 }
+})
 
   // Auto-calculation functions
   const calculateJamiHisoblangan = (avvalgiOylardan: number, birOylikHisoblangan: number) => {
     return avvalgiOylardan + birOylikHisoblangan
   }
 
-  const calculateQoldiqValues = (jamiHisoblangan: number, tolangan: number) => {
-    const difference = jamiHisoblangan - tolangan
-
+  const calculateQoldiqValues = (jamiHisoblangan: number, tolangan: { naqd: number, prechisleniya: number, karta: number }) => {
+  const jamiTolangan = calculateTolanganJami(tolangan.naqd, tolangan.prechisleniya, tolangan.karta);
+  const difference = jamiHisoblangan - jamiTolangan;
+  if (difference > 0) {
+    return { qoldiqQarzDorlik: difference, qoldiqAvans: 0 };
+  } else {
+    return { qoldiqQarzDorlik: 0, qoldiqAvans: Math.abs(difference) };
+  }
+};
     if (difference > 0) {
       return {
         qoldiqQarzDorlik: difference,
@@ -169,7 +193,12 @@ function ChiqimModule() {
           avvalgiOylardan: newEntry.avvalgiOylardan || 0,
           birOylikHisoblangan: newEntry.birOylikHisoblangan || 0,
           jamiHisoblangan,
-          tolangan: newEntry.tolangan || 0,
+          tolangan: {
+    jami: tolanganJami,
+    naqd: newEntry.tolangan?.naqd || 0,
+    prechisleniya: newEntry.tolangan?.prechisleniya || 0,
+    karta: newEntry.tolangan?.karta || 0,
+  },
           qoldiqQarzDorlik: qoldiqValues.qoldiqQarzDorlik,
           qoldiqAvans: qoldiqValues.qoldiqAvans,
         }
@@ -230,7 +259,10 @@ function ChiqimModule() {
       avvalgiOylardan: acc.avvalgiOylardan + row.avvalgiOylardan,
       birOylikHisoblangan: acc.birOylikHisoblangan + row.birOylikHisoblangan,
       jamiHisoblangan: acc.jamiHisoblangan + row.jamiHisoblangan,
-      tolangan: acc.tolangan + row.tolangan,
+      tolanganJami: acc.tolanganJami + row.tolangan.jami,
+    tolanganNaqd: acc.tolanganNaqd + row.tolangan.naqd,
+    tolanganPrechisleniya: acc.tolanganPrechisleniya + row.tolangan.prechisleniya,
+    tolanganKarta: acc.tolanganKarta + row.tolangan.karta,
       qoldiqQarzDorlik: acc.qoldiqQarzDorlik + row.qoldiqQarzDorlik,
       qoldiqAvans: acc.qoldiqAvans + row.qoldiqAvans,
     }),
@@ -238,7 +270,10 @@ function ChiqimModule() {
       avvalgiOylardan: 0,
       birOylikHisoblangan: 0,
       jamiHisoblangan: 0,
-      tolangan: 0,
+      tolanganJami: 0,
+    tolanganNaqd: 0,
+    tolanganPrechisleniya: 0,
+    tolanganKarta: 0,
       qoldiqQarzDorlik: 0,
       qoldiqAvans: 0,
     },
@@ -360,12 +395,18 @@ function ChiqimModule() {
                 <div>
                   <Label htmlFor="tolangan">To'langan summa</Label>
                   <Input
-                    id="tolangan"
-                    type="number"
-                    value={newEntry.tolangan || ""}
-                    onChange={(e) => setNewEntry({ ...newEntry, tolangan: Number(e.target.value) })}
-                    placeholder="0"
-                  />
+  id="tolangan-jami"
+  type="number"
+  value={formatNumber(
+    calculateTolanganJami(
+      newEntry.tolangan?.naqd || 0,
+      newEntry.tolangan?.prechisleniya || 0,
+      newEntry.tolangan?.karta || 0
+    )
+  )}
+  disabled
+  className="bg-green-50 text-green-700"
+/>
                 </div>
                 <div>
                   <Label htmlFor="qoldiqQarzDorlik" className="text-red-600">
@@ -494,7 +535,10 @@ function ChiqimModule() {
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Chiqim nomi</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Avvalgi oylardan qoldiq</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Bir oylik hisoblangan summa</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Jami hisoblangan</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">To'langan (Jami)</th>
+<th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Naqd</th>
+<th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Prechisleniya</th>
+<th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Karta</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">To'langan summa</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq qarzdorlik</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq avans</th>
@@ -543,9 +587,10 @@ function ChiqimModule() {
                 <td className="px-4 py-3 text-sm text-right text-green-600">
   {formatNumber(row.jamiHisoblangan)}
 </td>
-                  <td className="px-4 py-3 text-sm text-right text-gray-700">
-  {formatNumber(row.tolangan)}
-</td>
+                  <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.tolangan.jami)}</td>
+<td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.tolangan.naqd)}</td>
+<td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.tolangan.prechisleniya)}</td>
+<td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.tolangan.karta)}</td>
       <td className="px-4 py-3 text-sm text-right text-red-600">
   {formatNumber(row.qoldiqQarzDorlik)}
 </td>
@@ -669,15 +714,75 @@ function ChiqimModule() {
                   className="bg-green-50 text-green-700"
                 />
               </div>
-              <div>
-                <Label htmlFor="edit-tolangan">To'langan summa</Label>
-                <Input
-                  id="edit-tolangan"
-                  type="number"
-                  value={editingItem.tolangan}
-                  onChange={(e) => setEditingItem({ ...editingItem, tolangan: Number(e.target.value) })}
-                />
-              </div>
+             <div className="col-span-2">
+  <Label className="text-base font-medium">To'langan summa</Label>
+  <div className="grid grid-cols-4 gap-3 mt-2">
+    <div>
+      <Label htmlFor="tolangan-jami" className="text-sm text-green-600">Jami (Avtomatik)</Label>
+      <Input
+        id="tolangan-jami"
+        type="number"
+        value={formatNumber(
+          calculateTolanganJami(
+            newEntry.tolangan?.naqd || 0,
+            newEntry.tolangan?.prechisleniya || 0,
+            newEntry.tolangan?.karta || 0,
+          )
+        )}
+        disabled
+        className="bg-green-50 text-green-700"
+      />
+    </div>
+    <div>
+      <Label htmlFor="tolangan-naqd" className="text-sm">Naqd</Label>
+      <Input
+        id="tolangan-naqd"
+        type="text"
+        value={formatNumber(newEntry.tolangan?.naqd || "")}
+        onChange={e => setNewEntry({
+          ...newEntry,
+          tolangan: {
+            ...newEntry.tolangan,
+            naqd: parseNumber(e.target.value),
+          }
+        })}
+        placeholder="0"
+      />
+    </div>
+    <div>
+      <Label htmlFor="tolangan-prechisleniya" className="text-sm">Prechisleniya</Label>
+      <Input
+        id="tolangan-prechisleniya"
+        type="text"
+        value={formatNumber(newEntry.tolangan?.prechisleniya || "")}
+        onChange={e => setNewEntry({
+          ...newEntry,
+          tolangan: {
+            ...newEntry.tolangan,
+            prechisleniya: parseNumber(e.target.value),
+          }
+        })}
+        placeholder="0"
+      />
+    </div>
+    <div>
+      <Label htmlFor="tolangan-karta" className="text-sm">Karta</Label>
+      <Input
+        id="tolangan-karta"
+        type="text"
+        value={formatNumber(newEntry.tolangan?.karta || "")}
+        onChange={e => setNewEntry({
+          ...newEntry,
+          tolangan: {
+            ...newEntry.tolangan,
+            karta: parseNumber(e.target.value),
+          }
+        })}
+        placeholder="0"
+      />
+    </div>
+  </div>
+</div>
               <div>
                 <Label htmlFor="edit-qoldiqQarzDorlik" className="text-red-600">
                   Qoldiq qarzdorlik (Avtomatik)
