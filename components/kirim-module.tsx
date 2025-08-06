@@ -686,7 +686,7 @@ export default function KirimModule() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-gray-200 bg-gray-50">
+              <tr className="border-b border-gray-200 bg-gray-50 sticky top-0 z-10">
                 <th className="px-3 py-3 text-left text-sm font-medium text-gray-700 border-r border-gray-200">№</th>
                 <th className="px-3 py-3 text-left text-sm font-medium text-gray-700 border-r border-gray-200">
                   Korxona nomi
