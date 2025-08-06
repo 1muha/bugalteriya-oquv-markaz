@@ -194,7 +194,7 @@ export default function KirimModule() {
           telRaqami: newEntry.telRaqami || "",
           ismi: newEntry.ismi || "",
           xizmatTuri: newEntry.xizmatTuri || "",
-          filialNomi: newEntry.filialNomi || "Toshkent filiali",
+          filialNomi: newEntry.filialNomi || "Zarkent filiali",
           oldingiOylardan: {
             oylarSoni: newEntry.oldingiOylardan?.oylarSoni || 0,
             summasi: newEntry.oldingiOylardan?.summasi || 0,
