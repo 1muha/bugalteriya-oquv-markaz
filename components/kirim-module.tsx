@@ -140,6 +140,7 @@ export default function KirimModule() {
     const csvContent = [
       headers.join(","),
       ...filteredData.map((row) =>
+     
         [
           `"${row.korxonaNomi}"`,
           row.inn,
@@ -777,7 +778,7 @@ export default function KirimModule() {
               {filteredData.map((row, index) => (
                 <tr key={row.id}
     className={`border-b border-gray-100 hover:bg-gray-50 ${row.oldingiOylardan.summasi > 1 ? "bg-red-100" : ""}`}
-  >>
+  >
                   <td className="px-3 py-3 text-sm text-gray-900 border-r border-gray-200">{index + 1}</td>
                   <td className="px-3 py-3 text-sm text-gray-900 font-medium border-r border-gray-200">
                     {row.korxonaNomi}
