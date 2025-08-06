@@ -131,8 +131,8 @@ export default function BalansModule() {
       jamiHisoblangan: data.kirim.jamiHisoblangan,
       tolandi: data.kirim.tolandi,
       qoldiq: data.kirim.qoldiq,
-      jamiOylikXarajat: data.chiqim.birOylikHisoblangan,
-      jamiYigirmaAyirmasi: data.kirim.birOylikHisoblangan - data.chiqim.birOylikHisoblangan,
+      jamiOylikXarajat: data.chiqim.tolangan,
+      jamiYigirmaAyirmasi: data.kirim.tolandi.jami - data.chiqim.tolangan,
     }))
 
     // Only show filials with data
