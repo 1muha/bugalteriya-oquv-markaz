@@ -164,7 +164,7 @@ function ChiqimModule() {
         const entry = {
           sana: newEntry.sana || new Date().toLocaleDateString("en-GB"),
           nomi: newEntry.nomi || "",
-          filialNomi: newEntry.filialNomi || "Toshkent filiali",
+          filialNomi: newEntry.filialNomi || "Zarkent filiali",
           chiqimNomi: newEntry.chiqimNomi || "",
           avvalgiOylardan: newEntry.avvalgiOylardan || 0,
           birOylikHisoblangan: newEntry.birOylikHisoblangan || 0,
