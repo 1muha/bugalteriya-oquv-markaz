@@ -413,7 +413,7 @@ export default function BalansModule() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <h3 className="text-lg font-medium text-gray-900 mb-2">Jami Daromad</h3>
-          <p className="text-3xl font-bold text-green-600">{totals.birOylikHisoblangan.toLocaleString()} so'm</p>
+          <p className="text-3xl font-bold text-green-600">{totals.jami.toLocaleString()} so'm</p>
           <p className="text-sm text-gray-600 mt-1">Bir oylik hisoblangan summa</p>
         </div>
         <div className="bg-white rounded-lg border border-gray-200 p-6">
