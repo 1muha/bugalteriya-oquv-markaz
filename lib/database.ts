@@ -17,6 +17,7 @@ export async function getKirimData() {
     ismi: item.ismi,
     xizmatTuri: item.xizmat_turi,
     filialNomi: item.filial_nomi,
+    xodim: item.xodim || 'Nomaʼlum', // ADD THIS LINE
     oldingiOylardan: {
       oylarSoni: item.oldingi_oylar_soni,
       summasi: item.oldingi_oylar_summasi,
@@ -44,6 +45,7 @@ export async function addKirimData(data: any) {
       ismi: data.ismi,
       xizmat_turi: data.xizmatTuri,
       filial_nomi: data.filialNomi,
+      xodim: data.xodim,
       oldingi_oylar_soni: data.oldingiOylardan.oylarSoni,
       oldingi_oylar_summasi: data.oldingiOylardan.summasi,
       bir_oylik_hisoblangan_summa: data.birOylikHisoblanganSumma,
@@ -74,6 +76,7 @@ export async function updateKirimData(id: number, data: any) {
       ismi: data.ismi,
       xizmat_turi: data.xizmatTuri,
       filial_nomi: data.filialNomi,
+      xodim: data.xodim, // ADD THIS LINE
       oldingi_oylar_soni: data.oldingiOylardan.oylarSoni,
       oldingi_oylar_summasi: data.oldingiOylardan.summasi,
       bir_oylik_hisoblangan_summa: data.birOylikHisoblanganSumma,
