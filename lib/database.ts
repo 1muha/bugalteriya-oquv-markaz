@@ -17,7 +17,7 @@ export async function getKirimData() {
     ismi: item.ismi,
     xizmatTuri: item.xizmat_turi,
     filialNomi: item.filial_nomi,
-    xodim: item.xodim || 'Nomaʼlum', // ADD THIS LINE
+    xodim: item.xodim, // ADD THIS LINE
     oldingiOylardan: {
       oylarSoni: item.oldingi_oylar_soni,
       summasi: item.oldingi_oylar_summasi,
