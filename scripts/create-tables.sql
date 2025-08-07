@@ -7,6 +7,7 @@ CREATE TABLE kirim_data (
     ismi VARCHAR(255),
     xizmat_turi VARCHAR(255),
     filial_nomi VARCHAR(255) NOT NULL,
+    xodim VARCHAR(255),
     oldingi_oylar_soni INTEGER DEFAULT 0,
     oldingi_oylar_summasi BIGINT DEFAULT 0,
     bir_oylik_hisoblangan_summa BIGINT DEFAULT 0,
@@ -50,13 +51,13 @@ CREATE TABLE notifications (
 
 -- Insert sample data for Kirim
 INSERT INTO kirim_data (
-    korxona_nomi, inn, tel_raqami, ismi, xizmat_turi, filial_nomi,
+    korxona_nomi, inn, tel_raqami, ismi, xizmat_turi, filial_nomi, xodim,
     oldingi_oylar_soni, oldingi_oylar_summasi, bir_oylik_hisoblangan_summa,
     jami_qarz_dorlik, tolandi_jami, tolandi_naqd, tolandi_prechisleniya,
     tolandi_karta, qoldiq
 ) VALUES 
-('Guliston Savdo', '200048056', '+998 91 234-56-78', 'Karimova Nargiza', 'Buxgalteriya hisobi', 'Samarqand filiali', 2, 500000, 1000000, 1500000, 800000, 300000, 500000, 0, 700000),
-('Buxgalteriya hisobi', '123456789', '+998 90 123-45-67', 'Aliyev Vali', 'Buxgalteriya hisobi', 'Toshkent filiali', 0, 0, 750000, 750000, 750000, 750000, 0, 0, 0);
+('Guliston Savdo', '200048056', '+998 91 234-56-78', 'Karimova Nargiza', 'Buxgalteriya hisobi', 'Samarqand filiali', 'Qosimov Alim', 2, 500000, 1000000, 1500000, 800000, 300000, 500000, 0, 700000),
+('Buxgalteriya hisobi', '123456789', '+998 90 123-45-67', 'Aliyev Vali', 'Buxgalteriya hisobi', 'Toshkent filiali', 'Halimov Obit', 0, 0, 750000, 750000, 750000, 750000, 0, 0, 0);
 
 -- Insert sample data for Chiqim
 INSERT INTO chiqim_data (
