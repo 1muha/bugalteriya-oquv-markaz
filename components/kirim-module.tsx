@@ -547,3 +547,4 @@ export default function KirimModule() {
     </div>
   )
 }
+console.log("First item:", kirimData[0]?.xodim);
