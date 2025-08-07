@@ -318,7 +318,7 @@ export default function KirimModule() {
                 <th className="px-3 py-3 text-left text-sm font-medium text-gray-700 border-r border-gray-200">
                   Tel raqami
                 </th>
-                <th className="px-3 py-3 text-left text-sm font-medium text-gray-700 border-r border-gray-200">Ismi</th>
+                <th className="px-3 py-3 text-left text-sm font-medium text-gray-700 border-r border-gray-200">Ismi/Xodim</th>
                 <th className="px-3 py-3 text-left text-sm font-medium text-gray-700 border-r border-gray-200">
                   Xizmat turi
                 </th>
