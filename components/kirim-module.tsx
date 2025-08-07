@@ -518,7 +518,7 @@ export default function KirimModule() {
             <DialogHeader>
               <DialogTitle>Yozuvni tahrirlash</DialogTitle>
               <p className="text-sm text-gray-600">
-                Ma'lumotlarni yangilang (Jami qarzdorlik va Qoldiq avtomatik hisoblanadi)
+                Ma'lumotlarni yangila (Jami qarzdorlik va Qoldiq avtomatik hisoblanadi)
               </p>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 py-4">
