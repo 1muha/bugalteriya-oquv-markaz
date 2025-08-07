@@ -361,7 +361,7 @@ export default function KirimModule() {
                 <th className="px-3 py-2 border-r border-gray-200"></th>
                 <th className="px-3 py-2 border-r border-gray-200"></th>
                 <th className="px-3 py-2 border-r border-gray-200"></th>
-                <th className="px-3 py-2 border-r border-gray-200">Xodim</th> {/* ADDED EMPTY HEADER FOR XODIM */}
+                <th className="px-3 py-2 border-r border-gray-200"></th> {/* ADDED EMPTY HEADER FOR XODIM */}
                 <th className="px-2 py-2 text-xs text-gray-600 border-r border-gray-200">Oylar soni</th>
                 <th className="px-2 py-2 text-xs text-gray-600 border-r border-gray-200">Summasi</th>
                 <th className="px-3 py-2 border-r border-gray-200"></th>
