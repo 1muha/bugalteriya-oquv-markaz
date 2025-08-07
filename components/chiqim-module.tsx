@@ -30,7 +30,10 @@ interface ChiqimData {
 
 const filialOptions = ["Zarkent Filiali", "Nabrejniy Filiali"];
 
-const formatNumber = (value: string | number | undefined | null, separator: string = ",") => {
+const formatNumber = (
+  value: string | number | undefined | null,
+  separator: string = ","
+) => {
   if (value === null || value === undefined || value === "") return "";
   const digits = String(value).replace(/\D/g, "");
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
@@ -38,23 +41,6 @@ const formatNumber = (value: string | number | undefined | null, separator: stri
 
 const parseNumber = (value: string) => {
   return Number.parseFloat(value.replace(/,/g, "")) || 0;
-};
-
-const calculateTolanganJami = (naqd: number, prechisleniya: number, karta: number) => {
-  return (naqd || 0) + (prechisleniya || 0) + (karta || 0);
-};
-
-const calculateJamiHisoblangan = (avvalgiOylardan: number, birOylikHisoblangan: number) => {
-  return avvalgiOylardan + birOylikHisoblangan;
-};
-
-const calculateQoldiqValues = (jamiHisoblangan: number, tolangan: { naqd: number; prechisleniya: number; karta: number }) => {
-  const jamiTolangan = calculateTolanganJami(tolangan.naqd, tolangan.prechisleniya, tolangan.karta);
-  const difference = jamiHisoblangan - jamiTolangan;
-  return {
-    qoldiqQarzDorlik: difference > 0 ? difference : 0,
-    qoldiqAvans: difference < 0 ? Math.abs(difference) : 0,
-  };
 };
 
 export default function ChiqimModule() {
@@ -78,15 +64,30 @@ export default function ChiqimModule() {
     tolangan: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 },
   });
 
+  const calculateJamiHisoblangan = (avvalgiOylardan: number, birOylikHisoblangan: number) => {
+    return avvalgiOylardan + birOylikHisoblangan;
+  };
+
+  const calculateTolanganJami = (naqd: number, prechisleniya: number, karta: number) => {
+    return naqd + prechisleniya + karta;
+  };
+
+  const calculateQoldiqValues = (jamiHisoblangan: number, tolangan: number) => {
+    const difference = jamiHisoblangan - tolangan;
+    return {
+      qoldiqQarzDorlik: difference > 0 ? difference : 0,
+      qoldiqAvans: difference < 0 ? Math.abs(difference) : 0,
+    };
+  };
+
   const filteredData = useMemo(() => {
     return chiqimData.filter((item) => {
       const matchesSearch =
         !filters.searchTerm ||
-        item.nomi.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-        item.chiqimNomi.toLowerCase().includes(filters.searchTerm.toLowerCase()) ||
-        item.filialNomi.toLowerCase().includes(filters.searchTerm.toLowerCase());
-      const matchesType =
-        !filters.chiqimTuri || item.chiqimNomi.toLowerCase().includes(filters.chiqimTuri.toLowerCase());
+        item.nomi.toLowerCase().includes(filters.searchTerm.toLowerCase());
+      const matchesChiqimTuri =
+        !filters.chiqimTuri ||
+        item.chiqimNomi.toLowerCase().includes(filters.chiqimTuri.toLowerCase());
       const matchesFilial = filters.filial === "Barcha filiallar" || item.filialNomi === filters.filial;
       const matchesDateRange = (() => {
         if (!filters.startDate && !filters.endDate) return true;
@@ -97,7 +98,7 @@ export default function ChiqimModule() {
         if (endDate && itemDate > endDate) return false;
         return true;
       })();
-      return matchesSearch && matchesType && matchesFilial && matchesDateRange;
+      return matchesSearch && matchesChiqimTuri && matchesFilial && matchesDateRange;
     });
   }, [chiqimData, filters]);
 
@@ -106,10 +107,10 @@ export default function ChiqimModule() {
       avvalgiOylardan: acc.avvalgiOylardan + row.avvalgiOylardan,
       birOylikHisoblangan: acc.birOylikHisoblangan + row.birOylikHisoblangan,
       jamiHisoblangan: acc.jamiHisoblangan + row.jamiHisoblangan,
-      tolanganJami: acc.tolanganJami + row.tolangan.jami,
-      tolanganNaqd: acc.tolanganNaqd + row.tolangan.naqd,
-      tolanganPrechisleniya: acc.tolanganPrechisleniya + row.tolangan.prechisleniya,
-      tolanganKarta: acc.tolanganKarta + row.tolangan.karta,
+      tolangan: acc.tolangan + row.tolangan.jami,
+      naqd: acc.naqd + row.tolangan.naqd,
+      prechisleniya: acc.prechisleniya + row.tolangan.prechisleniya,
+      karta: acc.karta + row.tolangan.karta,
       qoldiqQarzDorlik: acc.qoldiqQarzDorlik + row.qoldiqQarzDorlik,
       qoldiqAvans: acc.qoldiqAvans + row.qoldiqAvans,
     }),
@@ -117,13 +118,13 @@ export default function ChiqimModule() {
       avvalgiOylardan: 0,
       birOylikHisoblangan: 0,
       jamiHisoblangan: 0,
-      tolanganJami: 0,
-      tolanganNaqd: 0,
-      tolanganPrechisleniya: 0,
-      tolanganKarta: 0,
+      tolangan: 0,
+      naqd: 0,
+      prechisleniya: 0,
+      karta: 0,
       qoldiqQarzDorlik: 0,
       qoldiqAvans: 0,
-    }
+    },
   );
 
   const downloadCSV = () => {
@@ -132,10 +133,10 @@ export default function ChiqimModule() {
       "Nomi",
       "Filial nomi",
       "Chiqim nomi",
-      "Avvalgi oylardan qoldiq",
-      "Bir oylik hisoblangan summa",
-      "Jami hisoblangan summa",
-      "To'langan summa (Jami)",
+      "Avvalgi oylardan",
+      "Bir oylik hisoblangan",
+      "Jami hisoblangan",
+      "To'langan jami",
       "Naqd",
       "Prechisleniya",
       "Karta",
@@ -150,23 +151,23 @@ export default function ChiqimModule() {
           `"${row.nomi}"`,
           `"${row.filialNomi}"`,
           `"${row.chiqimNomi}"`,
-          formatNumber(row.avvalgiOylardan),
-          formatNumber(row.birOylikHisoblangan),
-          formatNumber(row.jamiHisoblangan),
-          formatNumber(row.tolangan.jami),
-          formatNumber(row.tolangan.naqd),
-          formatNumber(row.tolangan.prechisleniya),
-          formatNumber(row.tolangan.karta),
-          formatNumber(row.qoldiqQarzDorlik),
-          formatNumber(row.qoldiqAvans),
-        ].join(",")
+          row.avvalgiOylardan,
+          row.birOylikHisoblangan,
+          row.jamiHisoblangan,
+          row.tolangan.jami,
+          row.tolangan.naqd,
+          row.tolangan.prechisleniya,
+          row.tolangan.karta,
+          row.qoldiqQarzDorlik,
+          row.qoldiqAvans,
+        ].join(","),
       ),
     ].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", `chiqimlar_${new Date().toISOString().split("T")[0]}.csv`);
+    link.setAttribute("download", `chiqim_hisobot_${new Date().toISOString().split("T")[0]}.csv`);
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -174,24 +175,20 @@ export default function ChiqimModule() {
   };
 
   const addNewEntry = async () => {
-    if (newEntry.nomi && newEntry.chiqimNomi) {
+    if (newEntry.nomi && newEntry.sana) {
       try {
         const jamiHisoblangan = calculateJamiHisoblangan(
           newEntry.avvalgiOylardan || 0,
-          newEntry.birOylikHisoblangan || 0
+          newEntry.birOylikHisoblangan || 0,
         );
         const tolanganJami = calculateTolanganJami(
           newEntry.tolangan?.naqd || 0,
           newEntry.tolangan?.prechisleniya || 0,
-          newEntry.tolangan?.karta || 0
+          newEntry.tolangan?.karta || 0,
         );
-        const qoldiqValues = calculateQoldiqValues(jamiHisoblangan, {
-          naqd: newEntry.tolangan?.naqd || 0,
-          prechisleniya: newEntry.tolangan?.prechisleniya || 0,
-          karta: newEntry.tolangan?.karta || 0,
-        });
+        const { qoldiqQarzDorlik, qoldiqAvans } = calculateQoldiqValues(jamiHisoblangan, tolanganJami);
         const entry = {
-          sana: newEntry.sana || new Date().toLocaleDateString("en-GB"),
+          sana: newEntry.sana || "",
           nomi: newEntry.nomi || "",
           filialNomi: newEntry.filialNomi || "Zarkent Filiali",
           chiqimNomi: newEntry.chiqimNomi || "",
@@ -204,8 +201,8 @@ export default function ChiqimModule() {
             prechisleniya: newEntry.tolangan?.prechisleniya || 0,
             karta: newEntry.tolangan?.karta || 0,
           },
-          qoldiqQarzDorlik: qoldiqValues.qoldiqQarzDorlik,
-          qoldiqAvans: qoldiqValues.qoldiqAvans,
+          qoldiqQarzDorlik,
+          qoldiqAvans,
         };
         await addChiqim(entry);
         setNewEntry({
@@ -215,7 +212,7 @@ export default function ChiqimModule() {
           chiqimNomi: "",
           avvalgiOylardan: 0,
           birOylikHisoblangan: 0,
-          tolangan: { jami: 0, naqd: 0, prechislenıya: 0, karta: 0 },
+          tolangan: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 },
         });
         setIsAddModalOpen(false);
       } catch (error) {
@@ -227,13 +224,16 @@ export default function ChiqimModule() {
 
   const updateEntry = async (updatedEntry: ChiqimData) => {
     try {
-      const jamiHisoblangan = calculateJamiHisoblangan(updatedEntry.avvalgiOylardan, updatedEntry.birOylikHisoblangan);
+      const jamiHisoblangan = calculateJamiHisoblangan(
+        updatedEntry.avvalgiOylardan,
+        updatedEntry.birOylikHisoblangan,
+      );
       const tolanganJami = calculateTolanganJami(
         updatedEntry.tolangan.naqd,
         updatedEntry.tolangan.prechisleniya,
-        updatedEntry.tolangan.karta
+        updatedEntry.tolangan.karta,
       );
-      const qoldiqValues = calculateQoldiqValues(jamiHisoblangan, updatedEntry.tolangan);
+      const { qoldiqQarzDorlik, qoldiqAvans } = calculateQoldiqValues(jamiHisoblangan, tolanganJami);
       const finalEntry = {
         ...updatedEntry,
         jamiHisoblangan,
@@ -241,8 +241,8 @@ export default function ChiqimModule() {
           ...updatedEntry.tolangan,
           jami: tolanganJami,
         },
-        qoldiqQarzDorlik: qoldiqValues.qoldiqQarzDorlik,
-        qoldiqAvans: qoldiqValues.qoldiqAvans,
+        qoldiqQarzDorlik,
+        qoldiqAvans,
       };
       await updateChiqim(updatedEntry.id, finalEntry);
       setEditingItem(null);
@@ -253,13 +253,11 @@ export default function ChiqimModule() {
   };
 
   const deleteEntry = async (id: number) => {
-    if (confirm("Haqiqatan ham bu yozuvni o'chirmoqchimisiz?")) {
-      try {
-        await deleteChiqim(id);
-      } catch (error) {
-        console.error("Error deleting entry:", error);
-        alert("Xatolik yuz berdi. Qaytadan urinib ko'ring.");
-      }
+    try {
+      await deleteChiqim(id);
+    } catch (error) {
+      console.error("Error deleting entry:", error);
+      alert("Xatolik yuz berdi. Qaytadan urinib ko'ring.");
     }
   };
 
@@ -273,128 +271,109 @@ export default function ChiqimModule() {
     });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-lg">Ma'lumotlar yuklanmoqda...</div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
-      {/* Header Section */}
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-900 mb-2">Chiqimlar boshqaruvi</h1>
-          <p className="text-gray-600">Barcha chiqimlar va to'lovlarni boshqaring</p>
+      {loading ? (
+        <div className="flex items-center justify-center h-64">
+          <div className="text-lg">Ma'lumotlar yuklanmoqda...</div>
         </div>
-        <div className="flex gap-3">
-          <Button onClick={downloadCSV} variant="outline" className="flex items-center gap-2 bg-transparent">
-            <Download className="h-4 w-4" />
-            CSV yuklab olish
-          </Button>
-          <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-gray-900 hover:bg-gray-800 text-white flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                Yangi chiqim
+      ) : (
+        <>
+          {/* Header Section */}
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-semibold text-gray-900 mb-2">Chiqimlar boshqaruvi</h1>
+              <p className="text-gray-600">Barcha chiqimlar va to'lovlarni boshqaring</p>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={downloadCSV} variant="outline" className="flex items-center gap-2 bg-transparent">
+                <Download className="h-4 w-4" />
+                CSV yuklab olish
               </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Yangi chiqim qo'shish</DialogTitle>
-                <p className="text-sm text-gray-600">
-                  Chiqim ma'lumotlarini kiriting (Jami hisoblangan va Qoldiqlar avtomatik hisoblanadi)
-                </p>
-              </DialogHeader>
-              <div className="grid grid-cols-2 gap-4 py-4">
-                <div>
-                  <Label htmlFor="sana">Sana</Label>
-                  <Input
-                    id="sana"
-                    type="date"
-                    value={newEntry.sana || ""}
-                    onChange={(e) => setNewEntry({ ...newEntry, sana: e.target.value })}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="nomi">Nomi</Label>
-                  <Input
-                    id="nomi"
-                    value={newEntry.nomi || ""}
-                    onChange={(e) => setNewEntry({ ...newEntry, nomi: e.target.value })}
-                    placeholder="Xodim yoki tashkilot nomi"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="filialNomi">Filial nomi</Label>
-                  <Select
-                    value={newEntry.filialNomi || "Zarkent Filiali"}
-                    onValueChange={(value) => setNewEntry({ ...newEntry, filialNomi: value })}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Filial tanlang" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {filialOptions.map((filial) => (
-                        <SelectItem key={filial} value={filial}>
-                          {filial}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="chiqimNomi">Chiqim nomi</Label>
-                  <Input
-                    id="chiqimNomi"
-                    value={newEntry.chiqimNomi || ""}
-                    onChange={(e) => setNewEntry({ ...newEntry, chiqimNomi: e.target.value })}
-                    placeholder="Chiqim turi"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="avvalgiOylardan">Avvalgi oylardan qoldiq</Label>
-                  <Input
-                    id="avvalgiOylardan"
-                    type="text"
-                    value={formatNumber(newEntry.avvalgiOylardan) || ""}
-                    onChange={(e) => setNewEntry({ ...newEntry, avvalgiOylardan: parseNumber(e.target.value) })}
-                    placeholder="0"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="birOylikHisoblangan">Bir oylik hisoblangan summa</Label>
-                  <Input
-                    id="birOylikHisoblangan"
-                    type="text"
-                    value={formatNumber(newEntry.birOylikHisoblangan) || ""}
-                    onChange={(e) => setNewEntry({ ...newEntry, birOylikHisoblangan: parseNumber(e.target.value) })}
-                    placeholder="0"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <Label className="text-base font-medium">To'langan summa</Label>
-                  <div className="grid grid-cols-4 gap-3 mt-2">
+              <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-gray-900 hover:bg-gray-800 text-white flex items-center gap-2">
+                    <Plus className="h-4 w-4" />
+                    Yangi chiqim
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-2xl">
+                  <DialogHeader>
+                    <DialogTitle>Yangi chiqim qo'shish</DialogTitle>
+                    <p className="text-sm text-gray-600">
+                      Chiqim ma'lumotlarini kiriting (Jami hisoblangan va Qoldiqlar avtomatik hisoblanadi)
+                    </p>
+                  </DialogHeader>
+                  <div className="grid grid-cols-2 gap-4 py-4">
                     <div>
-                      <Label htmlFor="tolangan-jami" className="text-sm text-green-600">Jami (Avtomatik)</Label>
+                      <Label htmlFor="sana">Sana</Label>
                       <Input
-                        id="tolangan-jami"
-                        type="number"
-                        value={calculateTolanganJami(
-                          newEntry.tolangan?.naqd || 0,
-                          newEntry.tolangan?.prechisleniya || 0,
-                          newEntry.tolangan?.karta || 0
-                        )}
-                        disabled
-                        className="bg-green-50 text-green-700"
+                        id="sana"
+                        type="date"
+                        value={newEntry.sana || ""}
+                        onChange={(e) => setNewEntry({ ...newEntry, sana: e.target.value })}
                       />
                     </div>
                     <div>
-                      <Label htmlFor="tolangan-naqd" className="text-sm">Naqd</Label>
+                      <Label htmlFor="nomi">Nomi</Label>
                       <Input
-                        id="tolangan-naqd"
+                        id="nomi"
+                        value={newEntry.nomi || ""}
+                        onChange={(e) => setNewEntry({ ...newEntry, nomi: e.target.value })}
+                        placeholder="Xodim yoki tashkilot nomi"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="filialNomi">Filial nomi</Label>
+                      <Select
+                        value={newEntry.filialNomi || "Zarkent Filiali"}
+                        onValueChange={(value) => setNewEntry({ ...newEntry, filialNomi: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Filial tanlang" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {filialOptions.map((filial) => (
+                            <SelectItem key={filial} value={filial}>
+                              {filial}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="chiqimNomi">Chiqim nomi</Label>
+                      <Input
+                        id="chiqimNomi"
+                        value={newEntry.chiqimNomi || ""}
+                        onChange={(e) => setNewEntry({ ...newEntry, chiqimNomi: e.target.value })}
+                        placeholder="Chiqim turi"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="avvalgiOylardan">Avvalgi oylardan qoldiq</Label>
+                      <Input
+                        id="avvalgiOylardan"
+                        type="text"
+                        value={formatNumber(newEntry.avvalgiOylardan) || ""}
+                        onChange={(e) => setNewEntry({ ...newEntry, avvalgiOylardan: parseNumber(e.target.value) })}
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="birOylikHisoblangan">Bir oylik hisoblangan summa</Label>
+                      <Input
+                        id="birOylikHisoblangan"
+                        type="text"
+                        value={formatNumber(newEntry.birOylikHisoblangan) || ""}
+                        onChange={(e) => setNewEntry({ ...newEntry, birOylikHisoblangan: parseNumber(e.target.value) })}
+                        placeholder="0"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="naqd">Naqd</Label>
+                      <Input
+                        id="naqd"
                         type="text"
                         value={formatNumber(newEntry.tolangan?.naqd) || ""}
                         onChange={(e) =>
@@ -407,9 +386,9 @@ export default function ChiqimModule() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="tolangan-prechisleniya" className="text-sm">Prechisleniya</Label>
+                      <Label htmlFor="prechisleniya">Prechisleniya</Label>
                       <Input
-                        id="tolangan-prechisleniya"
+                        id="prechisleniya"
                         type="text"
                         value={formatNumber(newEntry.tolangan?.prechisleniya) || ""}
                         onChange={(e) =>
@@ -422,9 +401,9 @@ export default function ChiqimModule() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="tolangan-karta" className="text-sm">Karta</Label>
+                      <Label htmlFor="karta">Karta</Label>
                       <Input
-                        id="tolangan-karta"
+                        id="karta"
                         type="text"
                         value={formatNumber(newEntry.tolangan?.karta) || ""}
                         onChange={(e) =>
@@ -436,123 +415,436 @@ export default function ChiqimModule() {
                         placeholder="0"
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="jamiHisoblangan" className="text-green-600">
+                        Jami hisoblangan summa (Avtomatik)
+                      </Label>
+                      <Input
+                        id="jamiHisoblangan"
+                        type="number"
+                        value={calculateJamiHisoblangan(newEntry.avvalgiOylardan || 0, newEntry.birOylikHisoblangan || 0)}
+                        disabled
+                        className="bg-green-50 text-green-700"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="tolangan-jami">To'langan summa (Avtomatik)</Label>
+                      <Input
+                        id="tolangan-jami"
+                        type="number"
+                        value={calculateTolanganJami(
+                          newEntry.tolangan?.naqd || 0,
+                          newEntry.tolangan?.prechisleniya || 0,
+                          newEntry.tolangan?.karta || 0,
+                        )}
+                        disabled
+                        className="bg-green-50 text-green-700"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="qoldiqQarzDorlik" className="text-red-600">
+                        Qoldiq qarzdorlik (Avtomatik)
+                      </Label>
+                      <Input
+                        id="qoldiqQarzDorlik"
+                        type="number"
+                        value={calculateQoldiqValues(
+                          calculateJamiHisoblangan(newEntry.avvalgiOylardan || 0, newEntry.birOylikHisoblangan || 0),
+                          calculateTolanganJami(
+                            newEntry.tolangan?.naqd || 0,
+                            newEntry.tolangan?.prechisleniya || 0,
+                            newEntry.tolangan?.karta || 0,
+                          ),
+                        ).qoldiqQarzDorlik}
+                        disabled
+                        className="bg-red-50 text-red-700"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="qoldiqAvans" className="text-blue-600">
+                        Qoldiq avans (Avtomatik)
+                      </Label>
+                      <Input
+                        id="qoldiqAvans"
+                        type="number"
+                        value={calculateQoldiqValues(
+                          calculateJamiHisoblangan(newEntry.avvalgiOylardan || 0, newEntry.birOylikHisoblangan || 0),
+                          calculateTolanganJami(
+                            newEntry.tolangan?.naqd || 0,
+                            newEntry.tolangan?.prechisleniya || 0,
+                            newEntry.tolangan?.karta || 0,
+                          ),
+                        ).qoldiqAvans}
+                        disabled
+                        className="bg-blue-50 text-blue-700"
+                      />
+                    </div>
+                  </div>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
+                      Bekor qilish
+                    </Button>
+                    <Button onClick={addNewEntry} className="bg-gray-900 hover:bg-gray-800 text-white">
+                      Saqlash
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
+          </div>
+
+          {/* Search and Filter Section */}
+          <div className="bg-white rounded-lg border border-gray-200 p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <Search className="h-4 w-4 text-gray-400" />
+              <h3 className="text-base font-medium">Qidiruv va filtr</h3>
+            </div>
+            <div className="grid grid-cols-6 gap-3">
+              <div>
+                <Input
+                  placeholder="Qidiruv..."
+                  value={filters.searchTerm}
+                  onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
+                  className="h-9"
+                />
+              </div>
+              <div>
+                <Input
+                  placeholder="Chiqim turi..."
+                  value={filters.chiqimTuri}
+                  onChange={(e) => setFilters({ ...filters, chiqimTuri: e.target.value })}
+                  className="h-9"
+                />
+              </div>
+              <div>
+                <Select value={filters.filial} onValueChange={(value) => setFilters({ ...filters, filial: value })}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Barcha filiallar">Barcha filiallar</SelectItem>
+                    {filialOptions.map((filial) => (
+                      <SelectItem key={filial} value={filial}>
+                        {filial}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Input
+                  type="date"
+                  value={filters.startDate}
+                  onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
+                  className="h-9"
+                />
+              </div>
+              <div>
+                <Input
+                  type="date"
+                  value={filters.endDate}
+                  onChange={(e) => setFilters({ ...filters, endDate: e.target.value })}
+                  className="h-9"
+                />
+              </div>
+              <div>
+                <Button onClick={clearFilters} variant="outline" className="h-9 w-full bg-transparent">
+                  Tozalash
+                </Button>
+              </div>
+            </div>
+          </div>
+
+          {/* Data Table */}
+          <div className="bg-white rounded-lg border border-gray-200">
+            <div className="p-6 border-b border-gray-200">
+              <h3 className="text-lg font-medium">Chiqimlar jadvali ({filteredData.length})</h3>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-gray-200 bg-gray-50">
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">№</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Sana</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Nomi</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Filial nomi</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Chiqim nomi</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Avvalgi oylardan qoldiq</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Bir oylik hisoblangan summa</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Jami hisoblangan</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">To'langan (Jami)</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Naqd</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Prechisleniya</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Karta</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq qarzdorlik</th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq avans</th>
+                    <th className="px-4 py-3 text-center text-sm font-medium text-gray-700">Amallar</th>
+                  </tr>
+                  <tr className="border-b-2 border-gray-300 bg-gray-100 font-medium">
+                    <td className="px-4 py-3 text-sm" colSpan={5}>
+                      Jami ko'rsatkichlar:
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(totals.avvalgiOylardan)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(totals.birOylikHisoblangan)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-green-600">{formatNumber(totals.jamiHisoblangan)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(totals.tolangan)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(totals.naqd)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(totals.prechisleniya)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(totals.karta)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-red-600">{formatNumber(totals.qoldiqQarzDorlik)}</td>
+                    <td className="px-4 py-3 text-sm text-right text-blue-600">{formatNumber(totals.qoldiqAvans)}</td>
+                    <td className="px-4 py-3"></td>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredData.map((row, index) => (
+                    <tr key={row.id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <td className="px-4 py-3 text-sm text-gray-900">{index + 1}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{row.sana}</td>
+                      <td className="px-4 py-3 text-sm text-gray-900 font-medium">{row.nomi}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{row.filialNomi}</td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{row.chiqimNomi}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.avvalgiOylardan)}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.birOylikHisoblangan)}</td>
+                      <td className="px-4 py-3 text-sm text-right text-green-600">{formatNumber(row.jamiHisoblangan)}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.tolangan.jami)}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.tolangan.naqd)}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.tolangan.prechisleniya)}</td>
+                      <td className="px-4 py-3 text-sm text-right text-gray-700">{formatNumber(row.tolangan.karta)}</td>
+                      <td className="px-4 py-3 text-sm text-right text-red-600">{formatNumber(row.qoldiqQarzDorlik)}</td>
+                      <td className="px-4 py-3 text-sm text-right text-blue-600">{formatNumber(row.qoldiqAvans)}</td>
+                      <td className="px-4 py-3 text-center">
+                        <div className="flex items-center justify-center gap-1">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setEditingItem(row)}
+                            className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-50"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => deleteEntry(row.id)}
+                            className="h-8 w-8 p-0 text-red-600 hover:bg-red-50"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Edit Modal */}
+          {editingItem && (
+            <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>Chiqimni tahrirlash</DialogTitle>
+                  <p className="text-sm text-gray-600">
+                    Ma'lumotlarni yangilang (Jami hisoblangan va Qoldiqlar avtomatik hisoblanadi)
+                  </p>
+                </DialogHeader>
+                <div className="grid grid-cols-2 gap-4 py-4">
+                  <div>
+                    <Label htmlFor="edit-sana">Sana</Label>
+                    <Input
+                      id="edit-sana"
+                      type="date"
+                      value={
+                        editingItem.sana
+                          ? new Date(editingItem.sana.split("/").reverse().join("-")).toISOString().split("T")[0]
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setEditingItem({ ...editingItem, sana: new Date(e.target.value).toLocaleDateString("en-GB") })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-nomi">Nomi</Label>
+                    <Input
+                      id="edit-nomi"
+                      value={editingItem.nomi}
+                      onChange={(e) => setEditingItem({ ...editingItem, nomi: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-filialNomi">Filial nomi</Label>
+                    <Select
+                      value={editingItem.filialNomi}
+                      onValueChange={(value) => setEditingItem({ ...editingItem, filialNomi: value })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Filial tanlang" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {filialOptions.map((filial) => (
+                          <SelectItem key={filial} value={filial}>
+                            {filial}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-chiqimNomi">Chiqim nomi</Label>
+                    <Input
+                      id="edit-chiqimNomi"
+                      value={editingItem.chiqimNomi}
+                      onChange={(e) => setEditingItem({ ...editingItem, chiqimNomi: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-avvalgiOylardan">Avvalgi oylardan qoldiq</Label>
+                    <Input
+                      id="edit-avvalgiOylardan"
+                      type="text"
+                      value={formatNumber(editingItem.avvalgiOylardan) || ""}
+                      onChange={(e) => setEditingItem({ ...editingItem, avvalgiOylardan: parseNumber(e.target.value) })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-birOylikHisoblangan">Bir oylik hisoblangan summa</Label>
+                    <Input
+                      id="edit-birOylikHisoblangan"
+                      type="text"
+                      value={formatNumber(editingItem.birOylikHisoblangan) || ""}
+                      onChange={(e) => setEditingItem({ ...editingItem, birOylikHisoblangan: parseNumber(e.target.value) })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-naqd">Naqd</Label>
+                    <Input
+                      id="edit-naqd"
+                      type="text"
+                      value={formatNumber(editingItem.tolangan.naqd) || ""}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          tolangan: { ...editingItem.tolangan, naqd: parseNumber(e.target.value) },
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-prechisleniya">Prechisleniya</Label>
+                    <Input
+                      id="edit-prechisleniya"
+                      type="text"
+                      value={formatNumber(editingItem.tolangan.prechisleniya) || ""}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          tolangan: { ...editingItem.tolangan, prechisleniya: parseNumber(e.target.value) },
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-karta">Karta</Label>
+                    <Input
+                      id="edit-karta"
+                      type="text"
+                      value={formatNumber(editingItem.tolangan.karta) || ""}
+                      onChange={(e) =>
+                        setEditingItem({
+                          ...editingItem,
+                          tolangan: { ...editingItem.tolangan, karta: parseNumber(e.target.value) },
+                        })
+                      }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-jamiHisoblangan" className="text-green-600">
+                      Jami hisoblangan summa (Avtomatik)
+                    </Label>
+                    <Input
+                      id="edit-jamiHisoblangan"
+                      type="number"
+                      value={calculateJamiHisoblangan(editingItem.avvalgiOylardan, editingItem.birOylikHisoblangan)}
+                      disabled
+                      className="bg-green-50 text-green-700"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-tolangan-jami">To'langan summa (Avtomatik)</Label>
+                    <Input
+                      id="edit-tolangan-jami"
+                      type="number"
+                      value={calculateTolanganJami(
+                        editingItem.tolangan.naqd,
+                        editingItem.tolangan.prechisleniya,
+                        editingItem.tolangan.karta,
+                      )}
+                      disabled
+                      className="bg-green-50 text-green-700"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-qoldiqQarzDorlik" className="text-red-600">
+                      Qoldiq qarzdorlik (Avtomatik)
+                    </Label>
+                    <Input
+                      id="edit-qoldiqQarzDorlik"
+                      type="number"
+                      value={calculateQoldiqValues(
+                        calculateJamiHisoblangan(editingItem.avvalgiOylardan, editingItem.birOylikHisoblangan),
+                        calculateTolanganJami(
+                          editingItem.tolangan.naqd,
+                          editingItem.tolangan.prechisleniya,
+                          editingItem.tolangan.karta,
+                        ),
+                      ).qoldiqQarzDorlik}
+                      disabled
+                      className="bg-red-50 text-red-700"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="edit-qoldiqAvans" className="text-blue-600">
+                      Qoldiq avans (Avtomatik)
+                    </Label>
+                    <Input
+                      id="edit-qoldiqAvans"
+                      type="number"
+                      value={calculateQoldiqValues(
+                        calculateJamiHisoblangan(editingItem.avvalgiOylardan, editingItem.birOylikHisoblangan),
+                        calculateTolanganJami(
+                          editingItem.tolangan.naqd,
+                          editingItem.tolangan.prechisleniya,
+                          editingItem.tolangan.karta,
+                        ),
+                      ).qoldiqAvans}
+                      disabled
+                      className="bg-blue-50 text-blue-700"
+                    />
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="jamiHisoblangan" className="text-green-600">
-                    Jami hisoblangan summa (Avtomatik)
-                  </Label>
-                  <Input
-                    id="jamiHisoblangan"
-                    type="number"
-                    value={calculateJamiHisoblangan(newEntry.avvalgiOylardan || 0, newEntry.birOylikHisoblangan || 0)}
-                    disabled
-                    className="bg-green-50 text-green-700"
-                  />
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={() => setEditingItem(null)}>
+                    Bekor qilish
+                  </Button>
+                  <Button onClick={() => updateEntry(editingItem)} className="bg-gray-900 hover:bg-gray-800 text-white">
+                    Saqlash
+                  </Button> 
                 </div>
-                <div>
-                  <Label htmlFor="qoldiqQarzDorlik" className="text-red-600">
-                    Qoldiq qarzdorlik (Avtomatik)
-                  </Label>
-                  <Input
-                    id="qoldiqQarzDorlik"
-                    type="number"
-                    value={calculateQoldiqValues(
-                      calculateJamiHisoblangan(newEntry.avvalgiOylardan || 0, newEntry.birOylikHisoblangan || 0),
-                      {
-                        naqd: newEntry.tolangan?.naqd || 0,
-                        prechisleniya: newEntry.tolangan?.prechisleniya || 0,
-                        karta: newEntry.tolangan?.karta || 0,
-                      }
-                    ).qoldiqQarzDorlik}
-                    disabled
-                    className="bg-red-50 text-red-700"
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="qoldiqAvans" className="text-blue-600">
-                    Qoldiq avans (Avtomatik)
-                  </Label>
-                  <Input
-                    id="qoldiqAvans"
-                    type="number"
-                    value={calculateQoldiqValues(
-                      calculateJamiHisoblangan(newEntry.avvalgiOylardan || 0, newEntry.birOylikHisoblangan || 0),
-                      {
-                        naqd: newEntry.tolangan?.naqd || 0,
-                        prechisleniya: newEntry.tolangan?.prechisleniya || 0,
-                        karta: newEntry.tolangan?.karta || 0,
-                      }
-                    ).qoldiqAvans}
-                    disabled
-                    className="bg-blue-50 text-blue-700"
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setIsAddModalOpen(false)}>
-                  Bekor qilish
-                </Button>
-                <Button onClick={addNewEntry} className="bg-gray-900 hover:bg-gray-800 text-white">
-                  Saqlash
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </div>
-      {/* Search and Filter Section */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Search className="h-4 w-4 text-gray-400" />
-          <h3 className="text-base font-medium">Qidiruv va filtr</h3>
-        </div>
-        <div className="grid grid-cols-6 gap-3">
-          <div>
-            <Input
-              placeholder="Qidiruv..."
-              value={filters.searchTerm}
-              onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
-              className="h-9"
-            />
-          </div>
-          <div>
-            <Input
-              placeholder="Chiqim turi..."
-              value={filters.chiqimTuri}
-              onChange={(e) => setFilters({ ...filters, chiqimTuri: e.target.value })}
-              className="h-9"
-            />
-          </div>
-          <div>
-            <Select value={filters.filial} onValueChange={(value) => setFilters({ ...filters, filial: value })}>
-              <SelectTrigger className="h-9">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Barcha filiallar">Barcha filiallar</SelectItem>
-                {filialOptions.map((filial) => (
-                  <SelectItem key={filial} value={filial}>
-                    {filial}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <Input
-              type="date"
-              value={filters.startDate}
-              onChange={(e) => setFilters({ ...filters, startDate: e.target.value })}
-              className="h-9"
-            />
-          </ ChiqimModule() {
-  const { chiqimData, loading, addChiqim, updateChiqim, deleteChiqim } = useAccounting();
-  const [filters, setFilters] = useState({
-    searchTerm: "",
-    chiqimTuri: "",
-    filial: "Barcha filiallar",
-    startDate: "",
-    endDate: "",
-  });
-  const [isAddModalOpen,
+              </DialogContent>
+            </Dialog>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+// Export totals function for Balans module
+export const getChiqimTotals = () => {
+  // Implement logic to return totals, assuming access to chiqimData
+  // This is a placeholder; adjust based on your Balans module requirements
+  return totals;
+};
