@@ -326,7 +326,7 @@ export default function KirimModule() {
                   Filial nomi
                 </th>
                 {/* ADDED XODIM COLUMN */}
-                <th className="px-3 py-3 text-left text-sm font-medium text-gray-700 border-r border-gray-200">
+                <th className="px-3 py-3 text-left text-sm font-medium text-purple-700 border-r border-gray-200">
                   Xodim
                 </th>
                 <th
