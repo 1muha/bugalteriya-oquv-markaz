@@ -20,6 +20,7 @@ interface KirimData {
   ismi: string
   xizmatTuri: string
   filialNomi: string
+  xodim: string
   oldingiOylardan: {
     oylarSoni: number
     summasi: number
