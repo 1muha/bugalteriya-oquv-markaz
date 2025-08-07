@@ -14,6 +14,7 @@ export interface KirimData {
   ismi: string
   xizmat_turi: string
   filial_nomi: string
+  xodim: string
   oldingi_oylar_soni: number
   oldingi_oylar_summasi: number
   bir_oylik_hisoblangan_summa: number
