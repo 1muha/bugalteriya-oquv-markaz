@@ -24,6 +24,7 @@ export interface KirimData {
   tolandi_prechisleniya: number
   tolandi_karta: number
   qoldiq: number
+  qoldiq_avans: number // NEW FIELD
   last_updated: string
   created_at: string
 }
