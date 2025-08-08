@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
 import {
@@ -34,6 +34,7 @@ interface KirimData {
     karta: number
   }
   qoldiq: number
+  qoldiq_avans: number
   lastUpdated: string
 }
 
@@ -80,6 +81,16 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
   const [chiqimData, setChiqimData] = useState<ChiqimData[]>([])
   const [loading, setLoading] = useState(true)
 
+  // NEW: Calculation function for Qoldiq and Qoldiq avans
+  const calculateQoldiqAndAvans = (jamiQarzDorlik: number, tolandiJami: number) => {
+    const difference = jamiQarzDorlik - tolandiJami;
+    if (difference >= 0) {
+      return { qoldiq: difference, qoldiq_avans: 0 };
+    } else {
+      return { qoldiq: 0, qoldiq_avans: -difference };
+    }
+  };
+
   // Load data from Supabase on mount
   useEffect(() => {
     refreshData()
@@ -89,7 +100,21 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
     setLoading(true)
     try {
       const [kirimResult, chiqimResult] = await Promise.all([getKirimData(), getChiqimData()])
-      setKirimData(kirimResult)
+      
+      // Ensure qoldiq_avans exists in kirimData
+      const updatedKirimData = kirimResult.map(item => {
+        // For existing items without qoldiq_avans, calculate it
+        if (item.qoldiq_avans === undefined) {
+          const { qoldiq, qoldiq_avans } = calculateQoldiqAndAvans(
+            item.jamiQarzDorlik, 
+            item.tolandi.jami
+          );
+          return { ...item, qoldiq, qoldiq_avans };
+        }
+        return item;
+      });
+      
+      setKirimData(updatedKirimData)
       setChiqimData(chiqimResult)
     } catch (error) {
       console.error("Error loading data:", error)
@@ -100,7 +125,13 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
 
   const addKirim = async (data: any) => {
     try {
-      await addKirimData(data)
+      // Calculate Qoldiq and Qoldiq avans before adding
+      const { qoldiq, qoldiq_avans } = calculateQoldiqAndAvans(
+        data.jamiQarzDorlik, 
+        data.tolandi.jami
+      );
+      
+      await addKirimData({ ...data, qoldiq, qoldiq_avans })
       await refreshData() // Refresh to get updated data
     } catch (error) {
       console.error("Error adding kirim:", error)
@@ -110,7 +141,13 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
 
   const updateKirim = async (id: number, data: any) => {
     try {
-      await updateKirimData(id, data)
+      // Calculate Qoldiq and Qoldiq avans before updating
+      const { qoldiq, qoldiq_avans } = calculateQoldiqAndAvans(
+        data.jamiQarzDorlik, 
+        data.tolandi.jami
+      );
+      
+      await updateKirimData(id, { ...data, qoldiq, qoldiq_avans })
       await refreshData()
     } catch (error) {
       console.error("Error updating kirim:", error)
@@ -170,6 +207,7 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
         prechisleniya: acc.prechisleniya + row.tolandi.prechisleniya,
         karta: acc.karta + row.tolandi.karta,
         qoldiq: acc.qoldiq + row.qoldiq,
+        qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans, // NEW: Added qoldiq_avans total
       }),
       {
         oylarSoni: 0,
@@ -181,6 +219,7 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
         prechisleniya: 0,
         karta: 0,
         qoldiq: 0,
+        qoldiq_avans: 0, // NEW: Initial value for qoldiq_avans total
       },
     )
   }
