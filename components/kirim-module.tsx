@@ -31,6 +31,7 @@ interface KirimData {
     karta: number;
   };
   qoldiq: number;
+  qoldiqAvans: number; // NEW FIELD
   lastUpdated: string;
 }
 
@@ -43,6 +44,15 @@ const formatNumber = (
   if (value === null || value === undefined || value === "") return "";
   const digits = String(value).replace(/\D/g, "");
   return digits.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+};
+
+const calculateQoldiqAndAvans = (jamiQarzDorlik: number, tolandiJami: number) => {
+  const difference = jamiQarzDorlik - tolandiJami;
+  if (difference >= 0) {
+    return { qoldiq: difference, qoldiqAvans: 0 };
+  } else {
+    return { qoldiq: 0, qoldiqAvans: -difference };
+  }
 };
 
 export default function KirimModule() {
@@ -60,6 +70,7 @@ export default function KirimModule() {
     xodim: "",
     oldingiOylardan: { oylarSoni: 0, summasi: 0 },
     tolandi: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 },
+    qoldiqAvans: 0, // NEW FIELD
   });
 
   const parseNumber = (value: string) => {
@@ -72,10 +83,6 @@ export default function KirimModule() {
 
   const calculateTolandiJami = (naqd: number, prechisleniya: number, karta: number) => {
     return naqd + prechisleniya + karta;
-  };
-
-  const calculateQoldiq = (jamiQarzDorlik: number, tolandiJami: number) => {
-    return jamiQarzDorlik - tolandiJami;
   };
 
   const filteredData = useMemo(() => {
@@ -122,6 +129,7 @@ export default function KirimModule() {
       "Prechisleniya",
       "Karta",
       "Qoldiq",
+      "Qoldiq avans", // NEW HEADER
     ];
     const csvContent = [
       headers.join(","),
@@ -143,6 +151,7 @@ export default function KirimModule() {
           row.tolandi.prechisleniya,
           row.tolandi.karta,
           row.qoldiq,
+          row.qoldiqAvans, // NEW DATA
         ].join(","),
       ),
     ].join("\n");
@@ -169,7 +178,7 @@ export default function KirimModule() {
           newEntry.tolandi?.prechisleniya || 0,
           newEntry.tolandi?.karta || 0,
         );
-        const qoldiq = calculateQoldiq(jamiQarzDorlik, tolandiJami);
+        const { qoldiq, qoldiqAvans } = calculateQoldiqAndAvans(jamiQarzDorlik, tolandiJami);
         const entry = {
           korxonaNomi: newEntry.korxonaNomi || "",
           inn: newEntry.inn || "",
@@ -191,6 +200,7 @@ export default function KirimModule() {
             karta: newEntry.tolandi?.karta || 0,
           },
           qoldiq,
+          qoldiqAvans, // NEW FIELD
           lastUpdated: new Date().toISOString(),
         };
         await addKirim(entry);
@@ -198,6 +208,7 @@ export default function KirimModule() {
           xodim: "",
           oldingiOylardan: { oylarSoni: 0, summasi: 0 },
           tolandi: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 },
+          qoldiqAvans: 0, // RESET NEW FIELD
         });
         setIsAddModalOpen(false);
       } catch (error) {
@@ -218,7 +229,7 @@ export default function KirimModule() {
         updatedEntry.tolandi.prechisleniya,
         updatedEntry.tolandi.karta,
       );
-      const qoldiq = calculateQoldiq(jamiQarzDorlik, tolandiJami);
+      const { qoldiq, qoldiqAvans } = calculateQoldiqAndAvans(jamiQarzDorlik, tolandiJami);
       const finalEntry = {
         ...updatedEntry,
         jamiQarzDorlik,
@@ -227,6 +238,7 @@ export default function KirimModule() {
           jami: tolandiJami,
         },
         qoldiq,
+        qoldiqAvans, // NEW FIELD
         lastUpdated: new Date().toISOString(),
       };
       await updateKirim(updatedEntry.id, finalEntry);
@@ -267,6 +279,7 @@ export default function KirimModule() {
       prechisleniya: acc.prechisleniya + row.tolandi.prechisleniya,
       karta: acc.karta + row.tolandi.karta,
       qoldiq: acc.qoldiq + row.qoldiq,
+      qoldiqAvans: acc.qoldiqAvans + row.qoldiqAvans, // NEW TOTAL
     }),
     {
       oylarSoni: 0,
@@ -278,6 +291,7 @@ export default function KirimModule() {
       prechisleniya: 0,
       karta: 0,
       qoldiq: 0,
+      qoldiqAvans: 0, // NEW TOTAL
     },
   );
 
@@ -594,6 +608,9 @@ export default function KirimModule() {
                 <th className="px-3 py-3 text-left text-sm font-medium text-gray-700 border-r border-gray-200">
                   Qoldiq
                 </th>
+                <th className="px-3 py-3 text-left text-sm font-medium text-blue-600 border-r border-gray-200">
+                  Qoldiq avans
+                </th>
                 <th className="px-3 py-3 text-center text-sm font-medium text-gray-700">Amallar</th>
               </tr>
               <tr className="border-b border-gray-200 bg-gray-50">
@@ -613,6 +630,7 @@ export default function KirimModule() {
                 <th className="px-2 py-2 text-xs text-gray-600 border-r border-gray-200">Naqd</th>
                 <th className="px-2 py-2 text-xs text-gray-600 border-r border-gray-200">Prechisleniya</th>
                 <th className="px-2 py-2 text-xs text-gray-600 border-r border-gray-200">Karta</th>
+                <th className="px-3 py-2 border-r border-gray-200"></th>
                 <th className="px-3 py-2 border-r border-gray-200"></th>
                 <th className="px-3 py-2"></th>
               </tr>
@@ -640,6 +658,9 @@ export default function KirimModule() {
                 <td className="px-3 py-3 text-sm text-right border-r border-gray-200">{formatNumber(totals.karta)}</td>
                 <td className="px-3 py-3 text-sm text-right text-red-600 border-r border-gray-200">
                   {formatNumber(totals.qoldiq)}
+                </td>
+                <td className="px-3 py-3 text-sm text-right text-blue-600 border-r border-gray-200">
+                  {formatNumber(totals.qoldiqAvans)}
                 </td>
                 <td className="px-3 py-3"></td>
               </tr>
@@ -688,6 +709,9 @@ export default function KirimModule() {
                   </td>
                   <td className="px-3 py-3 text-sm text-right text-red-600 border-r border-gray-200">
                     {formatNumber(row.qoldiq)}
+                  </td>
+                  <td className="px-3 py-3 text-sm text-right text-blue-600 border-r border-gray-200">
+                    {formatNumber(row.qoldiqAvans)}
                   </td>
                   <td className="px-3 py-3 text-center">
                     <div className="flex items-center justify-center gap-1">
