@@ -17,7 +17,7 @@ export async function getKirimData() {
     ismi: item.ismi,
     xizmatTuri: item.xizmat_turi,
     filialNomi: item.filial_nomi,
-    xodim: item.xodim, // ADD THIS LINE
+    xodim: item.xodim,
     oldingiOylardan: {
       oylarSoni: item.oldingi_oylar_soni,
       summasi: item.oldingi_oylar_summasi,
@@ -31,6 +31,7 @@ export async function getKirimData() {
       karta: item.tolandi_karta,
     },
     qoldiq: item.qoldiq,
+    qoldiq_avans: item.qoldiq_avans, // NEW FIELD
     lastUpdated: item.last_updated,
   }))
 }
@@ -55,6 +56,7 @@ export async function addKirimData(data: any) {
       tolandi_prechisleniya: data.tolandi.prechisleniya,
       tolandi_karta: data.tolandi.karta,
       qoldiq: data.qoldiq,
+      qoldiq_avans: data.qoldiq_avans, // NEW FIELD
     })
     .select()
 
@@ -76,7 +78,7 @@ export async function updateKirimData(id: number, data: any) {
       ismi: data.ismi,
       xizmat_turi: data.xizmatTuri,
       filial_nomi: data.filialNomi,
-      xodim: data.xodim, // ADD THIS LINE
+      xodim: data.xodim,
       oldingi_oylar_soni: data.oldingiOylardan.oylarSoni,
       oldingi_oylar_summasi: data.oldingiOylardan.summasi,
       bir_oylik_hisoblangan_summa: data.birOylikHisoblanganSumma,
@@ -86,6 +88,7 @@ export async function updateKirimData(id: number, data: any) {
       tolandi_prechisleniya: data.tolandi.prechisleniya,
       tolandi_karta: data.tolandi.karta,
       qoldiq: data.qoldiq,
+      qoldiq_avans: data.qoldiq_avans, // NEW FIELD
       last_updated: new Date().toISOString(),
     })
     .eq("id", id)
