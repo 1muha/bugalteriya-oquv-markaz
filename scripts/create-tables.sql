@@ -70,9 +70,9 @@ INSERT INTO chiqim_data (
     qoldiq_qarz_dorlik, qoldiq_avans
 ) VALUES 
 ('25/07/2024', 'Ali', 'Toshkent filiali', 'Ish haqi', 200000, 8000000, 8200000, 8500000, 0, 0, 0, 0, 300000),
-('10/06/2024', 'Vali', 'Samarqand filiali', 'Ijara to''lovi', 500000, 7500000, 8000000, 7000000, 1000000, 0),
-('01/07/2024', 'Sami', 'Toshkent filiali', 'Kommunal xarajatlar', 0, 6500000, 6500000, 6500000, 0, 0),
-('15/05/2024', 'Soli', 'Samarqand filiali', 'Transport xarajatlari', 0, 5000000, 5000000, 5500000, 0, 500000);
+('10/06/2024', 'Vali', 'Samarqand filiali', 'Ijara to''lovi', 500000, 7500000, 8000000, 7000000, 0, 0, 0, 1000000, 0),
+('01/07/2024', 'Sami', 'Toshkent filiali', 'Kommunal xarajatlar', 0, 6500000, 6500000, 6500000, 0, 0, 0, 0, 0),
+('15/05/2024', 'Soli', 'Samarqand filiali', 'Transport xarajatlari', 0, 5000000, 5000000, 5500000, 0, 0, 0, 0, 0, 500000);
 
 -- Insert sample notifications
 INSERT INTO notifications (title, message, date, is_recurring, frequency, is_active) VALUES 
