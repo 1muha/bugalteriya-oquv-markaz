@@ -37,7 +37,10 @@ export interface ChiqimData {
   avvalgi_oylardan: number
   bir_oylik_hisoblangan: number
   jami_hisoblangan: number
-  tolangan: number
+  tolangan_jami: number
+  tolangan_naqd: number
+  tolangan_prechisleniya: number
+  tolangan_karta: number
   qoldiq_qarz_dorlik: number
   qoldiq_avans: number
   created_at: string
