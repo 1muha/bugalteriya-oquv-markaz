@@ -46,7 +46,12 @@ interface ChiqimData {
   avvalgiOylardan: number
   birOylikHisoblangan: number
   jamiHisoblangan: number
-  tolangan: number
+  tolangan: {
+    jami: number;
+    naqd: number;
+    prechisleniya: number;
+    karta: number;
+  }
   qoldiqQarzDorlik: number
   qoldiqAvans: number
 }
@@ -194,7 +199,10 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
         avvalgiOylardan: 0,
         birOylikHisoblangan: 0,
         jamiHisoblangan: 0,
-        tolangan: 0,
+        jami: 0,
+        naqd: 0,
+        prechisleniya: 0,
+        karta: 0,
         qoldiqQarzDorlik: 0,
         qoldiqAvans: 0,
       },
