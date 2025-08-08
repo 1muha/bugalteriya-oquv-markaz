@@ -65,7 +65,7 @@ INSERT INTO kirim_data (
 -- Insert sample data for Chiqim
 INSERT INTO chiqim_data (
     sana, nomi, filial_nomi, chiqim_nomi, avvalgi_oylardan,
-    bir_oylik_hisoblangan, jami_hisoblangan, tolangan,
+    bir_oylik_hisoblangan, jami_hisoblangan, tolangan_jami, tolangan_naqd, tolangan_prechisleniya, tolangan_karta,
     qoldiq_qarz_dorlik, qoldiq_avans
 ) VALUES 
 ('25/07/2024', 'Ali', 'Toshkent filiali', 'Ish haqi', 200000, 8000000, 8200000, 8500000, 0, 300000),
