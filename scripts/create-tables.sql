@@ -31,7 +31,10 @@ CREATE TABLE chiqim_data (
     avvalgi_oylardan BIGINT DEFAULT 0,
     bir_oylik_hisoblangan BIGINT DEFAULT 0,
     jami_hisoblangan BIGINT DEFAULT 0,
-    tolangan BIGINT DEFAULT 0,
+    tolangan_jami BIGINT DEFAULT 0,
+    tolangan_naqd BIGINT DEFAULT 0,
+    tolangan_prechisleniya BIGINT DEFAULT 0,
+    tolangan_karta BIGINT DEFAULT 0,
     qoldiq_qarz_dorlik BIGINT DEFAULT 0,
     qoldiq_avans BIGINT DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
