@@ -48,10 +48,10 @@ interface ChiqimData {
   birOylikHisoblangan: number
   jamiHisoblangan: number
   tolangan: {
-    jami: number;
-    naqd: number;
-    prechisleniya: number;
-    karta: number;
+    jami: number
+    naqd: number
+    prechisleniya: number
+    karta: number
   }
   qoldiqQarzDorlik: number
   qoldiqAvans: number
@@ -231,6 +231,10 @@ export function AccountingProvider({ children }: { children: ReactNode }) {
         birOylikHisoblangan: acc.birOylikHisoblangan + row.birOylikHisoblangan,
         jamiHisoblangan: acc.jamiHisoblangan + row.jamiHisoblangan,
         tolangan: acc.tolangan + row.tolangan,
+        jami: acc.jami + row.tolangan.jami,
+        naqd: acc.naqd + row.tolangan.naqd,
+        prechisleniya: acc.prechisleniya + row.tolangan.prechisleniya,
+        karta: acc.karta + row.tolangan.karta,
         qoldiqQarzDorlik: acc.qoldiqQarzDorlik + row.qoldiqQarzDorlik,
         qoldiqAvans: acc.qoldiqAvans + row.qoldiqAvans,
       }),
