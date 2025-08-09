@@ -20,7 +20,12 @@ interface BalansData {
     karta: number
   }
   qoldiq: number
-  jamiOylikXarajat: number
+  tolangan: {
+    jami: number
+    naqd: number
+    prechisleniya: number
+    karta: number
+  }
   jamiYigirmaAyirmasi: number
 }
 
@@ -89,7 +94,7 @@ export default function BalansModule() {
           avvalgiOylardan: 0,
           birOylikHisoblangan: 0,
           jamiHisoblangan: 0,
-          tolangan: 0,
+          tolangan: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0},
           qoldiqQarzDorlik: 0,
           qoldiqAvans: 0,
         },
@@ -116,7 +121,10 @@ export default function BalansModule() {
         filialGroups[item.filialNomi].chiqim.avvalgiOylardan += item.avvalgiOylardan
         filialGroups[item.filialNomi].chiqim.birOylikHisoblangan += item.birOylikHisoblangan
         filialGroups[item.filialNomi].chiqim.jamiHisoblangan += item.jamiHisoblangan
-        filialGroups[item.filialNomi].chiqim.tolangan += item.tolangan
+        filialGroups[item.filialNomi].chiqim.tolangan.jami += item.tolangan.jami
+        filialGroups[item.filialNomi].chiqim.tolangan.naqd += item.tolangan.naqd
+        filialGroups[item.filialNomi].chiqim.tolangan.prechisleniya += item.tolangan.prechisleniya
+        filialGroups[item.filialNomi].chiqim.tolangan.karta += item.tolangan.karta
         filialGroups[item.filialNomi].chiqim.qoldiqQarzDorlik += item.qoldiqQarzDorlik
         filialGroups[item.filialNomi].chiqim.qoldiqAvans += item.qoldiqAvans
       }
@@ -154,7 +162,10 @@ export default function BalansModule() {
       "Prechisleniya",
       "Karta",
       "Qoldiq",
-      "Jami bir oylik xarajat",
+      "Jami",
+      "Naqd",
+      "Prechisleniya",
+      "Karta",
       "Jami yigirma puldan xarajatni ayirmasi sof foyda",
     ]
 
