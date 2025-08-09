@@ -31,7 +31,7 @@ interface KirimData {
     karta: number;
   };
   qoldiq: number;
-  qoldiqAvans: number; // NEW FIELD
+  qoldiq_avans: number; // Using underscore consistently
   lastUpdated: string;
 }
 
@@ -49,9 +49,9 @@ const formatNumber = (
 const calculateQoldiqAndAvans = (jamiQarzDorlik: number, tolandiJami: number) => {
   const difference = jamiQarzDorlik - tolandiJami;
   if (difference >= 0) {
-    return { qoldiq: difference, qoldiqAvans: 0 };
+    return { qoldiq: difference, qoldiq_avans: 0 };
   } else {
-    return { qoldiq: 0, qoldiqAvans: -difference };
+    return { qoldiq: 0, qoldiq_avans: -difference };
   }
 };
 
@@ -70,7 +70,7 @@ export default function KirimModule() {
     xodim: "",
     oldingiOylardan: { oylarSoni: 0, summasi: 0 },
     tolandi: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 },
-    qoldiqAvans: 0, // NEW FIELD
+    qoldiq_avans: 0, // NEW FIELD
   });
 
   const parseNumber = (value: string) => {
@@ -151,7 +151,7 @@ export default function KirimModule() {
           row.tolandi.prechisleniya,
           row.tolandi.karta,
           row.qoldiq,
-          row.qoldiqAvans, // NEW DATA
+          row.qoldiq_avans, // NEW DATA
         ].join(","),
       ),
     ].join("\n");
@@ -166,7 +166,7 @@ export default function KirimModule() {
     document.body.removeChild(link);
   };
 
-  const addNewEntry = async () => {
+   const addNewEntry = async () => {
     if (newEntry.korxonaNomi && newEntry.inn) {
       try {
         const jamiQarzDorlik = calculateJamiQarzDorlik(
@@ -178,7 +178,9 @@ export default function KirimModule() {
           newEntry.tolandi?.prechisleniya || 0,
           newEntry.tolandi?.karta || 0,
         );
-        const { qoldiq, qoldiqAvans } = calculateQoldiqAndAvans(jamiQarzDorlik, tolandiJami);
+        
+        // CALCULATE BOTH FIELDS
+        const { qoldiq, qoldiq_avans } = calculateQoldiqAndAvans(jamiQarzDorlik, tolandiJami);
         const entry = {
           korxonaNomi: newEntry.korxonaNomi || "",
           inn: newEntry.inn || "",
@@ -193,6 +195,7 @@ export default function KirimModule() {
           },
           birOylikHisoblanganSumma: newEntry.birOylikHisoblanganSumma || 0,
           jamiQarzDorlik,
+          jamiQarzDorlik,
           tolandi: {
             jami: tolandiJami,
             naqd: newEntry.tolandi?.naqd || 0,
@@ -200,7 +203,7 @@ export default function KirimModule() {
             karta: newEntry.tolandi?.karta || 0,
           },
           qoldiq,
-          qoldiqAvans, // NEW FIELD
+          qoldiq_avans, // NEW FIELD
           lastUpdated: new Date().toISOString(),
         };
         await addKirim(entry);
@@ -208,7 +211,7 @@ export default function KirimModule() {
           xodim: "",
           oldingiOylardan: { oylarSoni: 0, summasi: 0 },
           tolandi: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 },
-          qoldiqAvans: 0, // RESET NEW FIELD
+          qoldiq_avans: 0, // RESET NEW FIELD
         });
         setIsAddModalOpen(false);
       } catch (error) {
@@ -229,7 +232,10 @@ export default function KirimModule() {
         updatedEntry.tolandi.prechisleniya,
         updatedEntry.tolandi.karta,
       );
-      const { qoldiq, qoldiqAvans } = calculateQoldiqAndAvans(jamiQarzDorlik, tolandiJami);
+      
+      // CALCULATE BOTH FIELDS
+      const { qoldiq, qoldiq_avans } = calculateQoldiqAndAvans(jamiQarzDorlik, tolandiJami);
+      
       const finalEntry = {
         ...updatedEntry,
         jamiQarzDorlik,
@@ -238,9 +244,10 @@ export default function KirimModule() {
           jami: tolandiJami,
         },
         qoldiq,
-        qoldiqAvans, // NEW FIELD
+        qoldiq_avans, // NEW FIELD
         lastUpdated: new Date().toISOString(),
       };
+      
       await updateKirim(updatedEntry.id, finalEntry);
       setEditingItem(null);
     } catch (error) {
@@ -279,7 +286,7 @@ export default function KirimModule() {
       prechisleniya: acc.prechisleniya + row.tolandi.prechisleniya,
       karta: acc.karta + row.tolandi.karta,
       qoldiq: acc.qoldiq + row.qoldiq,
-      qoldiqAvans: acc.qoldiqAvans + row.qoldiqAvans, // NEW TOTAL
+      qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans, // NEW TOTAL
     }),
     {
       oylarSoni: 0,
@@ -291,7 +298,7 @@ export default function KirimModule() {
       prechisleniya: 0,
       karta: 0,
       qoldiq: 0,
-      qoldiqAvans: 0, // NEW TOTAL
+      qoldiq_avans: 0, // NEW TOTAL
     },
   );
 
@@ -660,7 +667,7 @@ export default function KirimModule() {
                   {formatNumber(totals.qoldiq)}
                 </td>
                 <td className="px-3 py-3 text-sm text-right text-blue-600 border-r border-gray-200">
-                  {formatNumber(totals.qoldiqAvans)}
+                  {formatNumber(totals.qoldiq_avans)}
                 </td>
                 <td className="px-3 py-3"></td>
               </tr>
@@ -711,7 +718,7 @@ export default function KirimModule() {
                     {formatNumber(row.qoldiq)}
                   </td>
                   <td className="px-3 py-3 text-sm text-right text-blue-600 border-r border-gray-200">
-                    {formatNumber(row.qoldiqAvans)}
+                    {formatNumber(row.qoldiq_avans)}
                   </td>
                   <td className="px-3 py-3 text-center">
                     <div className="flex items-center justify-center gap-1">
