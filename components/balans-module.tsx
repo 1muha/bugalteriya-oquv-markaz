@@ -20,6 +20,7 @@ interface BalansData {
     karta: number
   }
   qoldiq: number
+  qoldiq_avans: number  // NEW FIELD
   tolangan: {
     jami: number
     naqd: number
@@ -89,6 +90,7 @@ export default function BalansModule() {
           jamiHisoblangan: 0,
           tolandi: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 },
           qoldiq: 0,
+          qoldiq_avans: 0, // NEW FIELD
         },
         chiqim: {
           avvalgiOylardan: 0,
@@ -112,6 +114,7 @@ export default function BalansModule() {
         filialGroups[item.filialNomi].kirim.tolandi.prechisleniya += item.tolandi.prechisleniya
         filialGroups[item.filialNomi].kirim.tolandi.karta += item.tolandi.karta
         filialGroups[item.filialNomi].kirim.qoldiq += item.qoldiq
+        filialGroups[item.filialNomi].kirim.qoldiq_avans += item.qoldiq_avans // NEW FIELD
       }
     })
 
@@ -131,22 +134,23 @@ export default function BalansModule() {
     })
 
     // Create Balans data
- const balansData: BalansData[] = Object.entries(filialGroups).map(([filialNomi, data], index) => ({
-  id: index + 1,
-  filialNomi,
-  oldingiOylardan: data.kirim.oldingiOylardan,
-  birOylikHisoblangan: data.kirim.birOylikHisoblangan,
-  jamiHisoblangan: data.kirim.jamiHisoblangan,
-  tolandi: data.kirim.tolandi,
-  qoldiq: data.kirim.qoldiq,
-  jamiOylikXarajat: data.chiqim.tolangan, // <-- UPDATED
-  jamiYigirmaAyirmasi: data.kirim.tolandi.jami - data.chiqim.tolangan, // <-- UPDATED
-}))
+    const balansData: BalansData[] = Object.entries(filialGroups).map(([filialNomi, data], index) => ({
+      id: index + 1,
+      filialNomi,
+      oldingiOylardan: data.kirim.oldingiOylardan,
+      birOylikHisoblangan: data.kirim.birOylikHisoblangan,
+      jamiHisoblangan: data.kirim.jamiHisoblangan,
+      tolandi: data.kirim.tolandi,
+      qoldiq: data.kirim.qoldiq,
+      qoldiq_avans: data.kirim.qoldiq_avans, // NEW FIELD
+      tolangan: data.chiqim.tolangan,
+      jamiYigirmaAyirmasi: data.kirim.tolandi.jami - data.chiqim.tolangan.jami,
+    }))
 
     // Only show filials with data
     setData(
       balansData.filter(
-        (item) => item.oldingiOylardan > 0 || item.birOylikHisoblangan > 0 || item.jamiOylikXarajat > 0,
+        (item) => item.oldingiOylardan > 0 || item.birOylikHisoblangan > 0 || item.tolangan.jami > 0,
       ),
     )
   }, [kirimData, chiqimData, filters])
@@ -162,6 +166,7 @@ export default function BalansModule() {
       "Prechisleniya",
       "Karta",
       "Qoldiq",
+      "Qoldiq avans", // NEW HEADER
       "Jami",
       "Naqd",
       "Prechisleniya",
@@ -182,7 +187,11 @@ export default function BalansModule() {
           row.tolandi.prechisleniya,
           row.tolandi.karta,
           row.qoldiq,
-          row.jamiOylikXarajat,
+          row.qoldiq_avans, // NEW DATA
+          row.tolangan.jami,
+          row.tolangan.naqd,
+          row.tolangan.prechisleniya,
+          row.tolangan.karta,
           row.jamiYigirmaAyirmasi,
         ].join(","),
       ),
@@ -217,7 +226,8 @@ export default function BalansModule() {
       prechisleniya: acc.prechisleniya + row.tolandi.prechisleniya,
       karta: acc.karta + row.tolandi.karta,
       qoldiq: acc.qoldiq + row.qoldiq,
-      jamiOylikXarajat: acc.jamiOylikXarajat + row.jamiOylikXarajat,
+      qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans, // NEW TOTAL
+      jamiOylikXarajat: acc.jamiOylikXarajat + row.tolangan.jami,
       jamiYigirmaAyirmasi: acc.jamiYigirmaAyirmasi + row.jamiYigirmaAyirmasi,
     }),
     {
@@ -229,6 +239,7 @@ export default function BalansModule() {
       prechisleniya: 0,
       karta: 0,
       qoldiq: 0,
+      qoldiq_avans: 0, // NEW TOTAL
       jamiOylikXarajat: 0,
       jamiYigirmaAyirmasi: 0,
     },
@@ -329,7 +340,10 @@ export default function BalansModule() {
                   To'landi (iyul)
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Jami bir oylik xarajat</th>
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq avans</th> {/* NEW COLUMN */}
+                <th className="px-4 py-3 text-center text-sm font-medium text-gray-700" colSpan={4}>
+                  Xarajatlar (iyul)
+                </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                   Jami yigirma puldan xarajatni ayirmasi sof foyda
                 </th>
@@ -345,7 +359,11 @@ export default function BalansModule() {
                 <th className="px-2 py-2 text-xs text-gray-600">Prechisleniya</th>
                 <th className="px-2 py-2 text-xs text-gray-600">Karta</th>
                 <th className="px-4 py-2"></th>
-                <th className="px-4 py-2"></th>
+                <th className="px-4 py-2"></th> {/* NEW COLUMN */}
+                <th className="px-2 py-2 text-xs text-gray-600">Jami</th>
+                <th className="px-2 py-2 text-xs text-gray-600">Naqd</th>
+                <th className="px-2 py-2 text-xs text-gray-600">Prechisleniya</th>
+                <th className="px-2 py-2 text-xs text-gray-600">Karta</th>
                 <th className="px-4 py-2"></th>
               </tr>
 
@@ -362,6 +380,10 @@ export default function BalansModule() {
                 <td className="px-4 py-3 text-sm text-right">{totals.prechisleniya.toLocaleString()} so'm</td>
                 <td className="px-4 py-3 text-sm text-right">{totals.karta.toLocaleString()} so'm</td>
                 <td className="px-4 py-3 text-sm text-right">{totals.qoldiq.toLocaleString()} so'm</td>
+                <td className="px-4 py-3 text-sm text-right">{totals.qoldiq_avans.toLocaleString()} so'm</td> {/* NEW TOTAL */}
+                <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
+                <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
+                <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
                 <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
                 <td
                   className={`px-4 py-3 text-sm text-right ${totals.jamiYigirmaAyirmasi >= 0 ? "text-green-600" : "text-red-600"}`}
@@ -398,8 +420,18 @@ export default function BalansModule() {
                       {row.tolandi.karta.toLocaleString()} so'm
                     </td>
                     <td className="px-4 py-3 text-sm text-right text-gray-700">{row.qoldiq.toLocaleString()} so'm</td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">{row.qoldiq_avans.toLocaleString()} so'm</td> {/* NEW FIELD */}
                     <td className="px-4 py-3 text-sm text-right text-gray-700">
-                      {row.jamiOylikXarajat.toLocaleString()} so'm
+                      {row.tolangan.jami.toLocaleString()} so'm
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">
+                      {row.tolangan.naqd.toLocaleString()} so'm
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">
+                      {row.tolangan.prechisleniya.toLocaleString()} so'm
+                    </td>
+                    <td className="px-4 py-3 text-sm text-right text-gray-700">
+                      {row.tolangan.karta.toLocaleString()} so'm
                     </td>
                     <td
                       className={`px-4 py-3 text-sm text-right ${row.jamiYigirmaAyirmasi >= 0 ? "text-green-600" : "text-red-600"}`}
@@ -410,7 +442,7 @@ export default function BalansModule() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={12} className="px-4 py-8 text-center text-gray-500">
+                  <td colSpan={16} className="px-4 py-8 text-center text-gray-500">
                     Tanlangan filtr bo'yicha ma'lumot topilmadi
                   </td>
                 </tr>
