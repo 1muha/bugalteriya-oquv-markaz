@@ -495,15 +495,15 @@ export default function BalansModule() {
           <div className="mt-4 space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Naqd:</span>
-              <span className="font-medium">{totals.tolangan_naqd.toLocaleString() || "0"} so'm</span>
+              <span className="font-medium">{totals.tolangan_naqd?.toLocaleString() || "0"} so'm</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Prechisleniya:</span>
-              <span className="font-medium">{totals.tolangan_prechisleniya.toLocaleString() || "0"} so'm</span>
+              <span className="font-medium">{totals.tolangan_prechisleniya?.toLocaleString() || "0"} so'm</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Karta:</span>
-              <span className="font-medium">{totals.tolangan_karta.toLocaleString() || "0"} so'm</span>
+              <span className="font-medium">{totals.tolangan_karta?.toLocaleString() || "0"} so'm</span>
             </div>
           </div>
         </div>
