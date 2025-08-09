@@ -348,7 +348,7 @@ export default function BalansModule() {
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq avans</th>
                 <th className="px-4 py-3 text-center text-sm font-medium text-gray-700" colSpan={4}>
-                  Xarajatlar (iyul)
+                  Xarajatlar
                 </th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq Avans (chiqim)</th> {/* NEW COLUMN */}
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
@@ -389,10 +389,10 @@ export default function BalansModule() {
                 <td className="px-4 py-3 text-sm text-right">{totals.karta.toLocaleString()} so'm</td>
                 <td className="px-4 py-3 text-sm text-right">{totals.qoldiq.toLocaleString()} so'm</td>
                 <td className="px-4 py-3 text-sm text-right">{totals.qoldiq_avans.toLocaleString()} so'm</td>
-                <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
-                <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
-                <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
-                <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
+                <td className="px-4 py-3 text-sm text-right">{totals.tolangan.jami.toLocaleString()} so'm</td>
+                <td className="px-4 py-3 text-sm text-right">{totals.tolangan.naqd.toLocaleString()} so'm</td>
+                <td className="px-4 py-3 text-sm text-right">{totals.tolangan.prechisleniya.toLocaleString()} so'm</td>
+                <td className="px-4 py-3 text-sm text-right">{totals.tolangan.karta.toLocaleString()} so'm</td>
                 <td className="px-4 py-3 text-sm text-right">{totals.qoldiq_avans_chiqim.toLocaleString()} so'm</td> {/* NEW TOTAL */}
                 <td
                   className={`px-4 py-3 text-sm text-right ${totals.jamiYigirmaAyirmasi >= 0 ? "text-green-600" : "text-red-600"}`}
