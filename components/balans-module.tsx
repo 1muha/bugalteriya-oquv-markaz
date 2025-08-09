@@ -232,8 +232,11 @@ export default function BalansModule() {
       qoldiq: acc.qoldiq + row.qoldiq,
       qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans,
       jamiOylikXarajat: acc.jamiOylikXarajat + row.tolangan.jami,
+      tolangan_naqd: acc.tolangan_naqd + row.tolangan.naqd, // FIXED: Added these
+      tolangan_prechisleniya: acc.tolangan_prechisleniya + row.tolangan.prechisleniya, // FIXED
+      tolangan_karta: acc.tolangan_karta + row.tolangan.karta, // FIXED
       jamiYigirmaAyirmasi: acc.jamiYigirmaAyirmasi + row.jamiYigirmaAyirmasi,
-      qoldiq_avans_chiqim: acc.qoldiq_avans_chiqim + row.qoldiq_avans_chiqim, // NEW TOTAL
+      qoldiq_avans_chiqim: acc.qoldiq_avans_chiqim + row.qoldiq_avans_chiqim,
     }),
     {
       oldingiOylardan: 0,
@@ -246,8 +249,11 @@ export default function BalansModule() {
       qoldiq: 0,
       qoldiq_avans: 0,
       jamiOylikXarajat: 0,
+      tolangan_naqd: 0, // FIXED: Added these
+      tolangan_prechisleniya: 0, // FIXED
+      tolangan_karta: 0, // FIXED
       jamiYigirmaAyirmasi: 0,
-      qoldiq_avans_chiqim: 0, // NEW TOTAL
+      qoldiq_avans_chiqim: 0,
     },
   )
 
@@ -495,15 +501,15 @@ export default function BalansModule() {
           <div className="mt-4 space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Naqd:</span>
-              <span className="font-medium">{totals.tolangan_naqd?.toLocaleString() || "0"} so'm</span>
+              <span className="font-medium">{totals.tolangan_naqd.toLocaleString()} so'm</span> {/* FIXED */}
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Prechisleniya:</span>
-              <span className="font-medium">{totals.tolangan_prechisleniya?.toLocaleString() || "0"} so'm</span>
+              <span className="font-medium">{totals.tolangan_prechisleniya.toLocaleString()} so'm</span> {/* FIXED */}
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Karta:</span>
-              <span className="font-medium">{totals.tolangan_karta?.toLocaleString() || "0"} so'm</span>
+              <span className="font-medium">{totals.tolangan_karta.toLocaleString()} so'm</span> {/* FIXED */}
             </div>
           </div>
         </div>
@@ -518,25 +524,22 @@ export default function BalansModule() {
           <div className="mt-4 space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Naqd:</span>
-              <span className={`font-medium ${(totals.naqd - (totals.tolangan_naqd || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {(totals.naqd - (totals.tolangan_naqd || 0)).toLocaleString()} so'm
+              <span className={`font-medium ${(totals.naqd - totals.tolangan_naqd) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                {(totals.naqd - totals.tolangan_naqd).toLocaleString()} so'm
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Prechisleniya:</span>
-              <span className={`font-medium ${(totals.prechisleniya - (totals.tolangan_prechisleniya || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {(totals.prechisleniya - (totals.tolangan_prechisleniya || 0)).toLocaleString()} so'm
+              <span className={`font-medium ${(totals.prechisleniya - totals.tolangan_prechisleniya) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                {(totals.prechisleniya - totals.tolangan_prechisleniya).toLocaleString()} so'm
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Karta:</span>
-              <span className={`font-medium ${(totals.karta - (totals.tolangan_karta || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {(totals.karta - (totals.tolangan_karta || 0)).toLocaleString()} so'm
+              <span className={`font-medium ${(totals.karta - totals.tolangan_karta) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                {(totals.karta - totals.tolangan_karta).toLocaleString()} so'm
               </span>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  )
-}
