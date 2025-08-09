@@ -129,7 +129,12 @@ export async function getChiqimData() {
     avvalgiOylardan: item.avvalgi_oylardan,
     birOylikHisoblangan: item.bir_oylik_hisoblangan,
     jamiHisoblangan: item.jami_hisoblangan,
-    tolangan: item.tolangan,
+    tolangan: {
+      jami: item.tolangan_jami,
+      naqd: item.tolangan_naqd,
+      prechisleniya: item.tolangan_prechisleniya,
+      karta: item.tolangan_karta,
+    },
     qoldiqQarzDorlik: item.qoldiq_qarz_dorlik,
     qoldiqAvans: item.qoldiq_avans,
   }))
@@ -146,7 +151,10 @@ export async function addChiqimData(data: any) {
       avvalgi_oylardan: data.avvalgiOylardan,
       bir_oylik_hisoblangan: data.birOylikHisoblangan,
       jami_hisoblangan: data.jamiHisoblangan,
-      tolangan: data.tolangan,
+      tolangan_jami: data.tolangan.jami,
+      tolangan_naqd: data.tolangan.naqd,
+      tolangan_prechisleniya: data.tolangan.prechisleniya,
+      tolangan_karta: data.tolangan.karta,
       qoldiq_qarz_dorlik: data.qoldiqQarzDorlik,
       qoldiq_avans: data.qoldiqAvans,
     })
@@ -171,7 +179,10 @@ export async function updateChiqimData(id: number, data: any) {
       avvalgi_oylardan: data.avvalgiOylardan,
       bir_oylik_hisoblangan: data.birOylikHisoblangan,
       jami_hisoblangan: data.jamiHisoblangan,
-      tolangan: data.tolangan,
+      tolangan_jami: data.tolangan.jami,
+      tolangan_naqd: data.tolangan.naqd,
+      tolangan_prechisleniya: data.tolangan.prechisleniya,
+      tolangan_karta: data.tolangan.karta,
       qoldiq_qarz_dorlik: data.qoldiqQarzDorlik,
       qoldiq_avans: data.qoldiqAvans,
     })
