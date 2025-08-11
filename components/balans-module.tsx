@@ -220,42 +220,37 @@ export default function BalansModule() {
     })
   }
 
- const totals = data.reduce(
-  (acc, row) => ({
-    oldingiOylardan: acc.oldingiOylardan + row.oldingiOylardan,
-    birOylikHisoblangan: acc.birOylikHisoblangan + row.birOylikHisoblangan,
-    jamiHisoblangan: acc.jamiHisoblangan + row.jamiHisoblangan,
-    jami: acc.jami + row.tolandi.jami,
-    naqd: acc.naqd + row.tolandi.naqd,
-    prechisleniya: acc.prechisleniya + row.tolandi.prechisleniya,
-    karta: acc.karta + row.tolandi.karta,
-    qoldiq: acc.qoldiq + row.qoldiq,
-    qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans,
-    jamiOylikXarajat: acc.jamiOylikXarajat + row.tolangan.jami,
-    tolangan_naqd: acc.tolangan_naqd + row.tolangan.naqd,
-    tolangan_prechisleniya: acc.tolangan_prechisleniya + row.tolangan.prechisleniya,
-    tolangan_karta: acc.tolangan_karta + row.tolangan.karta,
-    jamiYigirmaAyirmasi: acc.jamiYigirmaAyirmasi + row.jamiYigirmaAyirmasi,
-    qoldiq_avans_chiqim: acc.qoldiq_avans_chiqim + row.qoldiq_avans_chiqim,
-  }),
-  {
-    oldingiOylardan: 0,
-    birOylikHisoblangan: 0,
-    jamiHisoblangan: 0,
-    jami: 0,
-    naqd: 0,
-    prechisleniya: 0,
-    karta: 0,
-    qoldiq: 0,
-    qoldiq_avans: 0,
-    jamiOylikXarajat: 0,
-    tolangan_naqd: 0,
-    tolangan_prechisleniya: 0,
-    tolangan_karta: 0,
-    jamiYigirmaAyirmasi: 0,
-    qoldiq_avans_chiqim: 0,
-  }
-);
+  const totals = data.reduce(
+    (acc, row) => ({
+      oldingiOylardan: acc.oldingiOylardan + row.oldingiOylardan,
+      birOylikHisoblangan: acc.birOylikHisoblangan + row.birOylikHisoblangan,
+      jamiHisoblangan: acc.jamiHisoblangan + row.jamiHisoblangan,
+      jami: acc.jami + row.tolandi.jami,
+      naqd: acc.naqd + row.tolandi.naqd,
+      prechisleniya: acc.prechisleniya + row.tolandi.prechisleniya,
+      karta: acc.karta + row.tolandi.karta,
+      qoldiq: acc.qoldiq + row.qoldiq,
+      qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans,
+      jamiOylikXarajat: acc.jamiOylikXarajat + row.tolangan.jami,
+      jamiYigirmaAyirmasi: acc.jamiYigirmaAyirmasi + row.jamiYigirmaAyirmasi,
+      qoldiq_avans_chiqim: acc.qoldiq_avans_chiqim + row.qoldiq_avans_chiqim, // NEW TOTAL
+    }),
+    {
+      oldingiOylardan: 0,
+      birOylikHisoblangan: 0,
+      jamiHisoblangan: 0,
+      jami: 0,
+      naqd: 0,
+      prechisleniya: 0,
+      karta: 0,
+      qoldiq: 0,
+      qoldiq_avans: 0,
+      jamiOylikXarajat: 0,
+      jamiYigirmaAyirmasi: 0,
+      qoldiq_avans_chiqim: 0, // NEW TOTAL
+    },
+  )
+
   return (
     <div className="space-y-6">
       {/* Header Section */}
@@ -500,15 +495,15 @@ export default function BalansModule() {
           <div className="mt-4 space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Naqd:</span>
-              <span className="font-medium">{totals.tolangan_naqd.toLocaleString()} so'm</span> {/* FIXED */}
+              <span className="font-medium">{totals.tolangan_naqd?.toLocaleString() || "0"} so'm</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Prechisleniya:</span>
-              <span className="font-medium">{totals.tolangan_prechisleniya.toLocaleString()} so'm</span> {/* FIXED */}
+              <span className="font-medium">{totals.tolangan_prechisleniya?.toLocaleString() || "0"} so'm</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Karta:</span>
-              <span className="font-medium">{totals.tolangan_karta.toLocaleString()} so'm</span> {/* FIXED */}
+              <span className="font-medium">{totals.tolangan_karta?.toLocaleString() || "0"} so'm</span>
             </div>
           </div>
         </div>
@@ -523,22 +518,25 @@ export default function BalansModule() {
           <div className="mt-4 space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Naqd:</span>
-              <span className={`font-medium ${(totals.naqd - totals.tolangan_naqd) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {(totals.naqd - totals.tolangan_naqd).toLocaleString()} so'm
+              <span className={`font-medium ${(totals.naqd - (totals.tolangan_naqd || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                {(totals.naqd - (totals.tolangan_naqd || 0)).toLocaleString()} so'm
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Prechisleniya:</span>
-              <span className={`font-medium ${(totals.prechisleniya - totals.tolangan_prechisleniya) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {(totals.prechisleniya - totals.tolangan_prechisleniya).toLocaleString()} so'm
+              <span className={`font-medium ${(totals.prechisleniya - (totals.tolangan_prechisleniya || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                {(totals.prechisleniya - (totals.tolangan_prechisleniya || 0)).toLocaleString()} so'm
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Karta:</span>
-              <span className={`font-medium ${(totals.karta - totals.tolangan_karta) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {(totals.karta - totals.tolangan_karta).toLocaleString()} so'm
+              <span className={`font-medium ${(totals.karta - (totals.tolangan_karta || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                {(totals.karta - (totals.tolangan_karta || 0)).toLocaleString()} so'm
               </span>
             </div>
           </div>
         </div>
       </div>
+    </div>
+  )
+}
