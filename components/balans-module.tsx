@@ -220,43 +220,42 @@ export default function BalansModule() {
     })
   }
 
-  const totals = data.reduce(
-    (acc, row) => ({
-      oldingiOylardan: acc.oldingiOylardan + row.oldingiOylardan,
-      birOylikHisoblangan: acc.birOylikHisoblangan + row.birOylikHisoblangan,
-      jamiHisoblangan: acc.jamiHisoblangan + row.jamiHisoblangan,
-      jami: acc.jami + row.tolandi.jami,
-      naqd: acc.naqd + row.tolandi.naqd,
-      prechisleniya: acc.prechisleniya + row.tolandi.prechisleniya,
-      karta: acc.karta + row.tolandi.karta,
-      qoldiq: acc.qoldiq + row.qoldiq,
-      qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans,
-      jamiOylikXarajat: acc.jamiOylikXarajat + row.tolangan.jami,
-      tolangan_naqd: acc.tolangan_naqd + row.tolangan.naqd, // FIXED: Added these
-      tolangan_prechisleniya: acc.tolangan_prechisleniya + row.tolangan.prechisleniya, // FIXED
-      tolangan_karta: acc.tolangan_karta + row.tolangan.karta, // FIXED
-      jamiYigirmaAyirmasi: acc.jamiYigirmaAyirmasi + row.jamiYigirmaAyirmasi,
-      qoldiq_avans_chiqim: acc.qoldiq_avans_chiqim + row.qoldiq_avans_chiqim,
-    }),
-    {
-      oldingiOylardan: 0,
-      birOylikHisoblangan: 0,
-      jamiHisoblangan: 0,
-      jami: 0,
-      naqd: 0,
-      prechisleniya: 0,
-      karta: 0,
-      qoldiq: 0,
-      qoldiq_avans: 0,
-      jamiOylikXarajat: 0,
-      tolangan_naqd: 0, // FIXED: Added these
-      tolangan_prechisleniya: 0, // FIXED
-      tolangan_karta: 0, // FIXED
-      jamiYigirmaAyirmasi: 0,
-      qoldiq_avans_chiqim: 0,
-    },
-  )
-
+ const totals = data.reduce(
+  (acc, row) => ({
+    oldingiOylardan: acc.oldingiOylardan + row.oldingiOylardan,
+    birOylikHisoblangan: acc.birOylikHisoblangan + row.birOylikHisoblangan,
+    jamiHisoblangan: acc.jamiHisoblangan + row.jamiHisoblangan,
+    jami: acc.jami + row.tolandi.jami,
+    naqd: acc.naqd + row.tolandi.naqd,
+    prechisleniya: acc.prechisleniya + row.tolandi.prechisleniya,
+    karta: acc.karta + row.tolandi.karta,
+    qoldiq: acc.qoldiq + row.qoldiq,
+    qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans,
+    jamiOylikXarajat: acc.jamiOylikXarajat + row.tolangan.jami,
+    tolangan_naqd: acc.tolangan_naqd + row.tolangan.naqd,  // Added comma here
+    tolangan_prechisleniya: acc.tolangan_prechisleniya + row.tolangan.prechisleniya,
+    tolangan_karta: acc.tolangan_karta + row.tolangan.karta,
+    jamiYigirmaAyirmasi: acc.jamiYigirmaAyirmasi + row.jamiYigirmaAyirmasi,
+    qoldiq_avans_chiqim: acc.qoldiq_avans_chiqim + row.qoldiq_avans_chiqim,
+  }),
+  {
+    oldingiOylardan: 0,
+    birOylikHisoblangan: 0,
+    jamiHisoblangan: 0,
+    jami: 0,
+    naqd: 0,
+    prechisleniya: 0,
+    karta: 0,
+    qoldiq: 0,
+    qoldiq_avans: 0,
+    jamiOylikXarajat: 0,
+    tolangan_naqd: 0,  // Added comma here
+    tolangan_prechisleniya: 0,
+    tolangan_karta: 0,
+    jamiYigirmaAyirmasi: 0,
+    qoldiq_avans_chiqim: 0,
+  },
+);
   return (
     <div className="space-y-6">
       {/* Header Section */}
