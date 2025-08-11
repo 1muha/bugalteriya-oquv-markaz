@@ -232,7 +232,7 @@ export default function BalansModule() {
     qoldiq: acc.qoldiq + row.qoldiq,
     qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans,
     jamiOylikXarajat: acc.jamiOylikXarajat + row.tolangan.jami,
-    tolangan_naqd: acc.tolangan_naqd + row.tolangan.naqd,  // Added comma here
+    tolangan_naqd: acc.tolangan_naqd + row.tolangan.naqd,
     tolangan_prechisleniya: acc.tolangan_prechisleniya + row.tolangan.prechisleniya,
     tolangan_karta: acc.tolangan_karta + row.tolangan.karta,
     jamiYigirmaAyirmasi: acc.jamiYigirmaAyirmasi + row.jamiYigirmaAyirmasi,
@@ -249,12 +249,12 @@ export default function BalansModule() {
     qoldiq: 0,
     qoldiq_avans: 0,
     jamiOylikXarajat: 0,
-    tolangan_naqd: 0,  // Added comma here
+    tolangan_naqd: 0,
     tolangan_prechisleniya: 0,
     tolangan_karta: 0,
     jamiYigirmaAyirmasi: 0,
     qoldiq_avans_chiqim: 0,
-  },
+  }
 );
   return (
     <div className="space-y-6">
