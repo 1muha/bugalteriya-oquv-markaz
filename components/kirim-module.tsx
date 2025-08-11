@@ -677,7 +677,7 @@ export default function KirimModule() {
                 <tr
                   key={row.id}
                   className={`border-b border-gray-100 hover:bg-gray-50 ${
-                    row.oldingiOylardan.summasi > 1 ? "bg-red-300" : ""
+                    row.qoldiq > 1 ? "bg-red-300" : ""
                   }`}
                 >
                   <td className="px-3 py-3 text-sm text-gray-900 border-r border-gray-200">{index + 1}</td>
