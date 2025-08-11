@@ -27,7 +27,7 @@ interface BalansData {
     prechisleniya: number
     karta: number
   }
-  qoldiq_avans_chiqim: number // NEW FIELD
+  qoldiq_avans_chiqim: number
   jamiYigirmaAyirmasi: number
 }
 
@@ -97,7 +97,7 @@ export default function BalansModule() {
           avvalgiOylardan: 0,
           birOylikHisoblangan: 0,
           jamiHisoblangan: 0,
-          tolangan: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0},
+          tolanganXarajat: { jami: 0, naqd: 0, prechisleniya: 0, karta: 0 }, // Changed from tolangan to tolanganXarajat
           qoldiqQarzDorlik: 0,
           qoldiqAvans: 0,
         },
@@ -125,10 +125,10 @@ export default function BalansModule() {
         filialGroups[item.filialNomi].chiqim.avvalgiOylardan += item.avvalgiOylardan
         filialGroups[item.filialNomi].chiqim.birOylikHisoblangan += item.birOylikHisoblangan
         filialGroups[item.filialNomi].chiqim.jamiHisoblangan += item.jamiHisoblangan
-        filialGroups[item.filialNomi].chiqim.tolangan.jami += item.tolangan.jami
-        filialGroups[item.filialNomi].chiqim.tolangan.naqd += item.tolangan.naqd
-        filialGroups[item.filialNomi].chiqim.tolangan.prechisleniya += item.tolangan.prechisleniya
-        filialGroups[item.filialNomi].chiqim.tolangan.karta += item.tolangan.karta
+        filialGroups[item.filialNomi].chiqim.tolanganXarajat.jami += item.tolangan.jami
+        filialGroups[item.filialNomi].chiqim.tolanganXarajat.naqd += item.tolangan.naqd
+        filialGroups[item.filialNomi].chiqim.tolanganXarajat.prechisleniya += item.tolangan.prechisleniya
+        filialGroups[item.filialNomi].chiqim.tolanganXarajat.karta += item.tolangan.karta
         filialGroups[item.filialNomi].chiqim.qoldiqQarzDorlik += item.qoldiqQarzDorlik
         filialGroups[item.filialNomi].chiqim.qoldiqAvans += item.qoldiqAvans
       }
@@ -144,9 +144,9 @@ export default function BalansModule() {
       tolandi: data.kirim.tolandi,
       qoldiq: data.kirim.qoldiq,
       qoldiq_avans: data.kirim.qoldiq_avans,
-      tolangan: data.chiqim.tolangan,
-      qoldiq_avans_chiqim: data.chiqim.qoldiqAvans, // NEW FIELD
-      jamiYigirmaAyirmasi: data.kirim.tolandi.jami - data.chiqim.tolangan.jami,
+      tolangan: data.chiqim.tolanganXarajat, // Use renamed property
+      qoldiq_avans_chiqim: data.chiqim.qoldiqAvans,
+      jamiYigirmaAyirmasi: data.kirim.tolandi.jami - data.chiqim.tolanganXarajat.jami, // Use renamed property
     }))
 
     // Only show filials with data
@@ -173,7 +173,7 @@ export default function BalansModule() {
       "Naqd",
       "Prechisleniya",
       "Karta",
-      "Qoldiq avans (chiqim)", // NEW HEADER
+      "Qoldiq avans (chiqim)",
       "Jami yigirma puldan xarajatni ayirmasi sof foyda",
     ]
 
@@ -195,7 +195,7 @@ export default function BalansModule() {
           row.tolangan.naqd,
           row.tolangan.prechisleniya,
           row.tolangan.karta,
-          row.qoldiq_avans_chiqim, // NEW DATA
+          row.qoldiq_avans_chiqim,
           row.jamiYigirmaAyirmasi,
         ].join(","),
       ),
@@ -232,8 +232,11 @@ export default function BalansModule() {
       qoldiq: acc.qoldiq + row.qoldiq,
       qoldiq_avans: acc.qoldiq_avans + row.qoldiq_avans,
       jamiOylikXarajat: acc.jamiOylikXarajat + row.tolangan.jami,
+      tolanganXarajat_naqd: (acc.tolanganXarajat_naqd || 0) + row.tolangan.naqd, // New property
+      tolanganXarajat_prechisleniya: (acc.tolanganXarajat_prechisleniya || 0) + row.tolangan.prechisleniya, // New property
+      tolanganXarajat_karta: (acc.tolanganXarajat_karta || 0) + row.tolangan.karta, // New property
       jamiYigirmaAyirmasi: acc.jamiYigirmaAyirmasi + row.jamiYigirmaAyirmasi,
-      qoldiq_avans_chiqim: acc.qoldiq_avans_chiqim + row.qoldiq_avans_chiqim, // NEW TOTAL
+      qoldiq_avans_chiqim: acc.qoldiq_avans_chiqim + row.qoldiq_avans_chiqim,
     }),
     {
       oldingiOylardan: 0,
@@ -246,8 +249,11 @@ export default function BalansModule() {
       qoldiq: 0,
       qoldiq_avans: 0,
       jamiOylikXarajat: 0,
+      tolanganXarajat_naqd: 0,
+      tolanganXarajat_prechisleniya: 0,
+      tolanganXarajat_karta: 0,
       jamiYigirmaAyirmasi: 0,
-      qoldiq_avans_chiqim: 0, // NEW TOTAL
+      qoldiq_avans_chiqim: 0,
     },
   )
 
@@ -350,7 +356,7 @@ export default function BalansModule() {
                 <th className="px-4 py-3 text-center text-sm font-medium text-gray-700" colSpan={4}>
                   Xarajatlar (iyul)
                 </th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq Avans (chiqim)</th> {/* NEW COLUMN */}
+                <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Qoldiq Avans (chiqim)</th>
                 <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">
                   Jami yigirma puldan xarajatni ayirmasi sof foyda
                 </th>
@@ -371,7 +377,7 @@ export default function BalansModule() {
                 <th className="px-2 py-2 text-xs text-gray-600">Naqd</th>
                 <th className="px-2 py-2 text-xs text-gray-600">Prechisleniya</th>
                 <th className="px-2 py-2 text-xs text-gray-600">Karta</th>
-                <th className="px-4 py-2"></th> {/* NEW COLUMN */}
+                <th className="px-4 py-2"></th>
                 <th className="px-4 py-2"></th>
               </tr>
 
@@ -393,7 +399,7 @@ export default function BalansModule() {
                 <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
                 <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
                 <td className="px-4 py-3 text-sm text-right">{totals.jamiOylikXarajat.toLocaleString()} so'm</td>
-                <td className="px-4 py-3 text-sm text-right">{totals.qoldiq_avans_chiqim.toLocaleString()} so'm</td> {/* NEW TOTAL */}
+                <td className="px-4 py-3 text-sm text-right">{totals.qoldiq_avans_chiqim.toLocaleString()} so'm</td>
                 <td
                   className={`px-4 py-3 text-sm text-right ${totals.jamiYigirmaAyirmasi >= 0 ? "text-green-600" : "text-red-600"}`}
                 >
@@ -495,15 +501,15 @@ export default function BalansModule() {
           <div className="mt-4 space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Naqd:</span>
-              <span className="font-medium">{totals.tolangan_naqd?.toLocaleString() || "0"} so'm</span>
+              <span className="font-medium">{totals.tolanganXarajat_naqd?.toLocaleString() || "0"} so'm</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Prechisleniya:</span>
-              <span className="font-medium">{totals.tolangan_prechisleniya?.toLocaleString() || "0"} so'm</span>
+              <span className="font-medium">{totals.tolanganXarajat_prechisleniya?.toLocaleString() || "0"} so'm</span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Karta:</span>
-              <span className="font-medium">{totals.tolangan_karta?.toLocaleString() || "0"} so'm</span>
+              <span className="font-medium">{totals.tolanganXarajat_karta?.toLocaleString() || "0"} so'm</span>
             </div>
           </div>
         </div>
@@ -518,20 +524,20 @@ export default function BalansModule() {
           <div className="mt-4 space-y-2">
             <div className="flex justify-between">
               <span className="text-gray-600">Naqd:</span>
-              <span className={`font-medium ${(totals.naqd - (totals.tolangan_naqd || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {(totals.naqd - (totals.tolangan_naqd || 0)).toLocaleString()} so'm
+              <span className={`font-medium ${(totals.naqd - (totals.tolanganXarajat_naqd || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                {(totals.naqd - (totals.tolanganXarajat_naqd || 0)).toLocaleString()} so'm
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Prechisleniya:</span>
-              <span className={`font-medium ${(totals.prechisleniya - (totals.tolangan_prechisleniya || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {(totals.prechisleniya - (totals.tolangan_prechisleniya || 0)).toLocaleString()} so'm
+              <span className={`font-medium ${(totals.prechisleniya - (totals.tolanganXarajat_prechisleniya || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                {(totals.prechisleniya - (totals.tolanganXarajat_prechisleniya || 0)).toLocaleString()} so'm
               </span>
             </div>
             <div className="flex justify-between">
               <span className="text-gray-600">Karta:</span>
-              <span className={`font-medium ${(totals.karta - (totals.tolangan_karta || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
-                {(totals.karta - (totals.tolangan_karta || 0)).toLocaleString()} so'm
+              <span className={`font-medium ${(totals.karta - (totals.tolanganXarajat_karta || 0)) >= 0 ? "text-green-600" : "text-red-600"}`}>
+                {(totals.karta - (totals.tolanganXarajat_karta || 0)).toLocaleString()} so'm
               </span>
             </div>
           </div>
