@@ -31,7 +31,7 @@ interface BalansData {
   jamiYigirmaAyirmasi: number
 }
 
-const filialOptions = ["Zarkent Filiali", "Nabrejniy Filiali"]
+const filialOptions = ["1-Filial", "Nabrejniy"]
 
 export default function BalansModule() {
   const { kirimData, chiqimData } = useAccounting()
