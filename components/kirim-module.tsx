@@ -113,10 +113,10 @@ export default function KirimModule() {
 
   const downloadCSV = () => {
     const headers = [
-      "Korxona nomi",
+      "O'quvchi Ism",
       "INN",
       "Tel raqami",
-      "Ismi",
+      "Familya",
       "Xizmat turi",
       "Filial nomi",
       "Xodim",
