@@ -28,7 +28,7 @@ interface ChiqimData {
   qoldiqAvans: number;
 }
 
-const filialOptions = ["Zarkent Filiali", "Nabrejniy Filiali"];
+const filialOptions = ["1-Filial", "Nabrejniy Filiali"];
 
 const formatNumber = (
   value: string | number | undefined | null,
